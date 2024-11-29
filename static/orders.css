@@ -1,0 +1,108 @@
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    height: 100vh;
+    display: flex;
+    flex-direction: column; /* Ensures proper stacking of elements */
+    overflow-x: hidden; /* Prevents horizontal scrolling */
+}
+
+.container {
+    max-width: 1200px; /* Ensures content stays within the screen */
+    margin: 0 auto; /* Centers content */
+    padding: 20px;
+}
+
+.styled-button {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #FFFFFF;
+    color: #828282;
+    border: 1px #E0E0E0 solid;
+    border-radius: 8px;
+    cursor: pointer;
+    outline: none;
+}
+
+.button-icon {
+    height: 20px;
+    margin-right: 10px;
+}
+
+.styled-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px; /* Adds space between rows */
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+.styled-table thead tr {
+    background-color: #007B7B;
+    color: white;
+    text-align: left;
+    height: 40px;
+}
+
+.styled-table th,
+.styled-table td {
+    padding: 12px 15px; /* Adds padding for better readability */
+    word-wrap: break-word; /* Prevents content overflow in cells */
+}
+
+.styled-table tbody tr {
+    background-color: #f9f9f9; /* Light background for rows */
+    border-bottom: 1px solid #dddddd; /* Adds a grey line between rows */
+}
+
+.styled-table tbody tr:hover {
+    background-color: #f1f1f1; /* Highlights row on hover */
+}
+
+.styled-table tbody tr:last-of-type {
+    border-bottom: none; /* Removes border for the last row */
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.pagination a {
+    margin: 0 5px;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: white;
+    background-color: #007B7B;
+    border-radius: 5px;
+}
+
+.pagination a:hover {
+    background-color: #005757;
+}
+
+.pagination span {
+    margin: 0 10px;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .styled-button {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+
+    .styled-table th,
+    .styled-table td {
+        font-size: 12px;
+    }
+
+    .container {
+        padding: 10px;
+    }
+}
