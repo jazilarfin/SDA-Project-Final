@@ -320,33 +320,30 @@ def edit_order_submit(order_id):
             print("items clear")
             # Add new items
             # Update existing items
-            existing_items = {item.id: item for item in order.items}
+            order.items.clear()  # Remove current items
 
-             # Get the list of submitted items from the form
-            submitted_items = request.form.getlist('item_id')  # IDs of the items in the form
-            submitted_item_data = {
-                int(request.form.getlist('item_id')[i]): {
-                    'brick_type': request.form.getlist('brick_type')[i],
-                    'brand': request.form.getlist('brand')[i],
-                    'quantity': int(request.form.getlist('quantity')[i]),
-                    'price': float(request.form.getlist('price')[i]),
-                }
-                for i in range(len(submitted_items))
-            }
+            # Get item data from the form
+            brands = request.form.getlist('brand[]')
+            brick_types = request.form.getlist('brick_type[]')
+            quantities = request.form.getlist('quantity[]')
+            prices = request.form.getlist('price[]')
 
-            # Update or delete existing items
-            for item_id, item in existing_items.items():
-                if item_id in submitted_item_data:
-                    # Update the item if it's still in the form
-                    item_data = submitted_item_data[item_id]
-                    item.brick_type = item_data['brick_type']
-                    item.brand = item_data['brand']
-                    item.quantity = item_data['quantity']
-                    item.price = item_data['price']
-                    db.session.add(item)  # Save the updates
-                else:
-                    # Delete the item if it's not in the form
-                    db.session.delete(item)
+            # Add updated items back to the order
+            for i in range(len(brands)):
+                quantity = int(quantities[i])
+                price = float(prices[i])
+                total_price = quantity * price  # Calculate total price for the item
+
+                new_item = Item(
+                    order_id=order.id,
+                    brand_id=int(brands[i]),
+                    brick_type_name=brick_types[i],
+                    quantity=quantity,
+                    price=price,
+                    total_price=total_price  # Set the total price
+                )
+                db.session.add(new_item)
+
 
 
             db.session.commit()
@@ -448,6 +445,7 @@ def add_order():
             #     return redirect(url_for('add_order'))
             salesman = Salesman.query.get(salesman_id)
 
+            
             # Retrieve the salesman ID (by name)
             # salesman = Salesman.query.filter_by(name=request.form['salesman_name']).first()
             # if not salesman:

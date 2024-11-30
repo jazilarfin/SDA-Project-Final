@@ -84,7 +84,7 @@
             <div class="card-header text-white" style="background-color: #007B7B;">
                 <h5 class="mb-0">Transportation Details</h5>
             </div>
-            
+
             <div class="card-body">
                 <div class="mb-3">
                     <label for="vehicle_id" class="form-label">Vehicle Registration Number</label>
@@ -135,7 +135,7 @@
         </div>
 
         <!-- Item Details Section -->
-        <div class="section card mb-4" id="item-details-container">
+        <!-- <div class="section card mb-4" id="item-details-container">
             <div class="card-header text-white" style="background-color: #007B7B;">
                 <h5 class="mb-0">Item Details</h5>
             </div>
@@ -146,7 +146,6 @@
 
                     <div class="mb-3">
                         <label for="brand_{{ loop.index }}" class="form-label">Brand</label>
-                        <!-- <input type="text" name="brand_{{ loop.index }}" id="brand_{{ loop.index }}" class="form-control" value="{{ item.brand }}" required> -->
                         
                         <select name="brand_{{ loop.index }}" id="brand_{{ loop.index }}" class="form-control" required>
                             <option value disabled selected>{{ item.brand.name }} </option>
@@ -159,7 +158,6 @@
 
                     <div class="mb-3">
                         <label for="brick_type_{{ loop.index }}" class="form-label">Brick Type</label>
-                        <!-- <input type="text" name="brick_type_{{ loop.index }}" id="brick_type_{{ loop.index }}" class="form-control" value="{{ item.brick_type_name }}" required> -->
                         
                         <select name="brick_type_{{ loop.index }}" id="brick_type_{{ loop.index }}" class="form-control" required>
                             <option value disabled selected>{{item.brick_type_name}}</option>
@@ -183,7 +181,58 @@
                 </div>
                 {% endfor %}
             </div>
+        </div> -->
+
+        <div class="section card mb-4" id="item-details-container">
+            <div class="card-header text-white" style="background-color: #007B7B;">
+                <h5 class="mb-0">Item Details</h5>
+            </div>
+            <div class="card-body">
+                {% for item in order.items %}
+                <div class="item-details mb-4">
+                    <h5>Item {{ loop.index }}</h5>
+        
+                    <!-- Hidden input to include the item ID -->
+                    <input type="hidden" name="item_id[]" value="{{ item.id }}">
+        
+                    <div class="mb-3">
+                        <label for="brand_{{ loop.index }}" class="form-label">Brand</label>
+                        <select name="brand[]" id="brand_{{ loop.index }}" class="form-control" required>
+                            {% for brand in brands %}
+                                <option value="{{ brand.id }}" {% if item.brand.id == brand.id %}selected{% endif %}>
+                                    {{ brand.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+        
+                    <div class="mb-3">
+                        <label for="brick_type_{{ loop.index }}" class="form-label">Brick Type</label>
+                        <select name="brick_type[]" id="brick_type_{{ loop.index }}" class="form-control" required>
+                            {% for brick in bricks %}
+                                <option value="{{ brick.type_name }}" {% if item.brick_type_name == brick.type_name %}selected{% endif %}>
+                                    {{ brick.type_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+        
+                    <div class="mb-3">
+                        <label for="quantity_{{ loop.index }}" class="form-label">Quantity</label>
+                        <input type="number" name="quantity[]" id="quantity_{{ loop.index }}" 
+                               class="form-control" value="{{ item.quantity }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="price_{{ loop.index }}" class="form-label">Price</label>
+                        <input type="number" name="price[]" id="price_{{ loop.index }}" 
+                               class="form-control" value="{{ item.price }}" required>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
+        
 
         <!-- Submit Button -->
         <div class="text-end" style="padding-bottom: 50px;">

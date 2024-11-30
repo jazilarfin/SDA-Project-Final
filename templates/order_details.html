@@ -114,15 +114,15 @@
             <div class="mb-3">
                 <h5>Item {{ loop.index }}</h5>
                 <div class="mb-3">
-                    <label class="form-label">Brick Type</label>
-                    <!-- <p class="form-control-plaintext">{{ item.brick_type }}</p> -->
-                    <input type="text" id="customer_name" class="form-control" value="{{ item.brick_type_name }}" disabled>
-
-                </div>
-                <div class="mb-3">
                     <label class="form-label">Brand</label>
                     <!-- <p class="form-control-plaintext">{{ item.brand }}</p> -->
                     <input type="text" id="brand_name" class="form-control" value="{{ item.brand.name }}" disabled>
+
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Brick Type</label>
+                    <!-- <p class="form-control-plaintext">{{ item.brick_type }}</p> -->
+                    <input type="text" id="customer_name" class="form-control" value="{{ item.brick_type_name }}" disabled>
 
                 </div>
                 <div class="mb-3">
