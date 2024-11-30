@@ -852,8 +852,38 @@ def brand_list_buttons():
     button_value = request.form.get('button')  # Get the value of the button clicked from the form
     if button_value == 'add_brand':  # If the "add_brand" button was clicked
         return redirect(url_for('add_brand'))  # Redirect to the "add_brand" route
-    return redirect(url_for('brand'))  # If another button was clicked, redirect to the brand list page
+    
 
+    
+    filters = request.form.getlist('filters')  # Get selected filters as list
+    search_text = request.form.get('search_text', '')  # Get search text
+
+    # Start with the base query
+    query = Brand.query
+
+    # Apply filters based on selected checkboxes
+    if 'name' in filters:
+        query = query.filter(Brand.name.ilike(f'%{search_text}%'))
+    if 'location' in filters:
+        query = query.filter(Brand.location.ilike(f'%{search_text}%'))
+    if 'contact' in filters:
+        query = query.filter(Brand.contact_no.ilike(f'%{search_text}%'))
+    if 'p_contact' in filters:
+        query=query.filter(Brand.principal_contact.ilike(f'%own'))
+    
+    brand = query.all()
+
+    if 'brick_type' in filters:
+        brand = Brand.query.join(BrickType).filter(
+        BrickType.type_name.ilike(f'%{search_text}%')
+    ).all()
+    #     query=query.filter(Vehicle.ownership_status.ilike(f'%private'))
+    # Execute the query
+    
+
+
+    return render_template('filtered_brand.html',brands=brand)
+    
 # Route to display the brand list page with pagination
 @app.route('/brand', methods=['GET'])
 @login_required

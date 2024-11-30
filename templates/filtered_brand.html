@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}
+<link rel="stylesheet" href="static/brand.css">
+<title>Brands</title>
+{% endblock %}
+
+{% block mainheading %}
+Filtered Brands Directory
+{% endblock %}
+
+{% block maincontent %}
+<div class="content-container">
+    
+
+
+
+    
+        
+
+        
+
+        <div style="padding: 5%; overflow-x: auto;"> <!-- Added responsiveness wrapper -->
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Brand Name</th>
+                        <th>Location</th>
+                        <th>Principal Contact</th>
+                        <th>Contact No.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for brand in brands %}
+                <tr data-url="{{ url_for('brand_details', brand_id=brand.id) }}" onclick="redirectToDetails(this)">
+                    <td>{{ brand.name }}</td>
+                    <td>{{ brand.location }}</td>
+                    <td>{{ brand.principal_contact }}</td>
+                    <td>{{ brand.contact_no }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    
+       
+    
+
+    
+</div>
+
+
+{% endblock %}
