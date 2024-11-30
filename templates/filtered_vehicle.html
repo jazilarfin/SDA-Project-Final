@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}
+<link rel="stylesheet" href="static/vehicle.css">
+<title>Vehicles</title>
+{% endblock %}
+
+{% block mainheading %}
+Filtered Vehicles Directory
+{% endblock %}
+
+{% block maincontent %}
+<div>
+    
+
+    
+
+  
+
+
+    <div style="padding: 5%; overflow-x: auto;"> <!-- Added responsiveness wrapper -->
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Registration Number</th>
+                    <th>Type</th>
+                    <th>Capacity (Kgs)</th>
+                    <th>Ownership Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vehicle in vehicles %}
+                <tr data-url="{{ url_for('vehicle_details', vehicle_id=vehicle.id) }}" onclick="redirectToDetails(this)">
+                    <td>{{ vehicle.registration_no }}</td>
+                    <td>{{ vehicle.vehicle_type }}</td>
+                    <td>{{ vehicle.capacity }}</td>
+                    <td>{{ vehicle.ownership_status }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    
+</div>
+
+   
+
+
+<script>
+    // Function to redirect to details page
+    function redirectToDetails(row) {
+        const url = row.getAttribute('data-url');
+        window.location.href = url;
+    }
+
+    // // Function to open the filter modal
+    // document.getElementById('filterButton').addEventListener('click', function() {
+    //     document.getElementById('filterModal').style.display = 'flex';
+    // });
+
+    // // Function to close the filter modal
+    // function closeFilterModal() {
+    //     document.getElementById('filterModal').style.display = 'none';
+    // }
+
+
+
+
+
+
+
+        // Function to open the filter modal
+    document.getElementById('filterButton').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent form submission when clicking the button
+        document.getElementById('filterModal').style.display = 'flex';
+    });
+
+    // Function to close the filter modal
+    function closeFilterModal() {
+        document.getElementById('filterModal').style.display = 'none';
+    }
+
+</script>
+
+{% endblock %}

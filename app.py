@@ -632,7 +632,30 @@ def vehicle_list_buttons():
     button_value = request.form.get('button')  # Get the value of the button clicked from the form
     if button_value == 'add_vehicle':  # If the "add_vehicle" button was clicked
         return redirect(url_for('add_vehicle'))  # Redirect to the "add_vehicle" route
-    return redirect(url_for('vehicle'))  # If another button was clicked, redirect to the vehicle list page
+    
+    
+    filters = request.form.getlist('filters')  # Get selected filters as list
+    search_text = request.form.get('search_text', '')  # Get search text
+
+    # Start with the base query
+    query = Vehicle.query
+
+    # Apply filters based on selected checkboxes
+    if 'reg_no' in filters:
+        query = query.filter(Vehicle.registration_no.ilike(f'%{search_text}%'))
+    if 'type' in filters:
+        query = query.filter(Vehicle.vehicle_type.ilike(f'%{search_text}%'))
+    if 'capacity' in filters:
+        query = query.filter(Vehicle.capacity.ilike(f'%{search_text}%'))
+    if 'owned' in filters:
+        query=query.filter(Vehicle.ownership_status.ilike(f'%own'))
+    if 'private' in filters:
+        query=query.filter(Vehicle.ownership_status.ilike(f'%private'))
+    # Execute the query
+    vehicle = query.all()
+
+
+    return render_template('filtered_vehicle.html',vehicles=vehicle)
 
 # Route to display the vehicle list page with pagination
 @app.route('/vehicle', methods=['GET'])
