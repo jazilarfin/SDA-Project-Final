@@ -12,7 +12,7 @@
 
 
 <nav class="navbar navbar-expand-lg"
-    style="background-color: #007b7b; border-radius: 10px; padding: 5px 25px; height: 45px; width: 100%;">
+    style="background-color: #007b7b; border-radius: 10px; padding: 5px 25px; height: 45px; width: 80%;">
     <div class="container-fluid d-flex align-items-center">
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav d-flex align-items-center">
@@ -48,7 +48,7 @@
 
 
 <!-- <div class="container mt-4" style="padding-top: 10px;"> -->
-<div class="d-flex flex-column gap-4" style="padding-top: 10px;">
+<div class="d-flex flex-column gap-4" style="padding-top: 10px; width:80%">
 
     <form action="{{ url_for('edit_order', order_id=order.id) }}" method="POST">
         
@@ -74,7 +74,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="total_amount" class="form-label">Amount to Charge</label>
-                    <input type="number" name="total_amount" id="total_amount" class="form-control" value="{{ order.total_amount }}"  required>
+                    <input type="number" name="total_amount" id="total_amount" class="form-control" value="{{ order.total_amount }}" min="0"  required>
                 </div>   
             </div>
         </div>
@@ -111,12 +111,12 @@
                 <div class="mb-3">
                     <label for="vehicle_rent" class="form-label">Vehicle Rent</label>
                     <input type="number" name="vehicle_rent" id="vehicle_rent" class="form-control" 
-                           value="{{ order.vehicle_rent }}" required>
+                           value="{{ order.vehicle_rent }}" min="0" required>
                 </div>
                 <div class="mb-3">
                     <label for="labor_cost" class="form-label">Labor Cost</label>
                     <input type="number" name="labor_cost" id="labor_cost" class="form-control" 
-                           value="{{ order.labor_cost }}" required>
+                           value="{{ order.labor_cost }}" min="0" required>
                 </div>
                 <div class="mb-3">
                     <label for="salesman_name" class="form-label">Salesman Name</label>
@@ -220,13 +220,13 @@
                     <div class="mb-3">
                         <label for="quantity_{{ loop.index }}" class="form-label">Quantity</label>
                         <input type="number" name="quantity[]" id="quantity_{{ loop.index }}" 
-                               class="form-control" value="{{ item.quantity }}" required>
+                               class="form-control" value="{{ item.quantity }}" min="0" required>
                     </div>
                     
                     <div class="mb-3">
                         <label for="price_{{ loop.index }}" class="form-label">Price</label>
                         <input type="number" name="price[]" id="price_{{ loop.index }}" 
-                               class="form-control" value="{{ item.price }}" required>
+                               class="form-control" value="{{ item.price }}" min="0" required>
                     </div>
                 </div>
                 {% endfor %}

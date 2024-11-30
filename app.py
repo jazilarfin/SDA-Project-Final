@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from sqlalchemy.sql import extract
+from sqlalchemy import func
 import os
 
 app = Flask(__name__)
@@ -194,7 +196,25 @@ def home():
 
 @app.route('/dashboard')
 def dashboard():
-    return render_template('dashboard.html')
+   
+   recent_orders = Order.query.order_by(Order.order_date.desc()).limit(10).all()
+   net_income = db.session.query(func.sum(Order.total_amount)).scalar() or 0
+   sales = db.session.query(
+        extract('month', Order.order_date).label('month'),
+        db.func.sum(Order.total_amount).label('total_sales')
+    ).group_by(
+        extract('month', Order.order_date)
+    ).order_by('month').all()
+
+    
+   import calendar
+
+   labels = [calendar.month_name[int(row[0])] for row in sales]
+
+   values = [row[1] for row in sales]  # Total sales
+   return render_template("dashboard.html",net_income=net_income,recent_orders=recent_orders, labels=labels, values=values)
+    #return render_template('dashboard.html')
+
 
 
 

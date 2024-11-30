@@ -8,23 +8,73 @@
 {% block mainheading %}
 Dashboard
 {% endblock %}
-{% block maincontent %}
-<div class="container  d-flex justify-content-between">
-    <!-- Net Income -->
-    <div class="card custom-card">
-        <div class="card-body">
-            <p class="text-muted mb-1">Net Income</p>
-            <h5 class="fw-bold">$18,784.00</h5>
-        </div>
-    </div>
 
-    <!-- Expected Income -->
-    <div class="card custom-card">
-        <div class="card-body">
-            <p class="text-muted mb-1">Expected Income</p>
-            <h5 class="fw-bold">$25,635.00</h5>
-        </div>
+{% block maincontent %}
+<div class="dashboard">
+  <div class="header">
+    <h1></h1>
+  </div>
+  <div class="stats">
+    <div class="stat-box">
+      <p>Net Income</p>
+      <h2>${{ "{:,.2f}".format(net_income) }}</h2>
     </div>
+    <div class="stat-box">
+      <p>Expected Income</p>
+      <h2>$25,635.00</h2>
+    </div>
+  </div>
+  <div class="container mt-4">
+    <h4>Income Trend</h4>
+    <canvas id="lineChart" width="900" height="400"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctx = document.getElementById("lineChart").getContext("2d");
+    var LineChart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: {{ labels | tojson }},
+            datasets: [{
+                label: "Income",
+                data: {{ values | tojson }},
+                fill: false,
+                borderColor: "rgb(75, 192, 192)",
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+</script>
+<div class="recent-orders">
+    <h2>Recent Orders</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Order_ID</th>
+                <th>Customer</th>
+                <th>Delivery Location</th>
+                <th>Sale Price</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in recent_orders %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.customer_name }}</td>
+                <td>{{ order.customer_address }}</td>
+                <td>{{ order.total_amount }}</td>
+                <td>{{ order.order_date}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
 </div>
 
 {% endblock %}
