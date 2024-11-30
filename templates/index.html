@@ -24,7 +24,7 @@
             <span class="icon"><img src="/static/icons/username-icon.png"
                 alt="Username Icon"></span>
             <input type="text" id="username" name="username"
-              placeholder="Username" required>
+              placeholder="Username">
           </div>
 
           <!-- Password Input Group -->
@@ -32,15 +32,18 @@
             <span class="icon"><img src="/static/icons/password-icon.png"
                 alt="Password Icon"></span>
             <input type="password" id="password" name="password"
-              placeholder="Password" required>
+              placeholder="Password">
           </div>
 
-          <button type="submit">SIGN IN</button>
+          <input type="submit" value="SIGN IN" name="login_buttons">
+
+          <input type="submit" value="REGISTER" name="login_buttons">
+       
         </form>
       </div>
     </div>
 
-    <script>
+    <!-- <script>
       function validateForm() {
         const username = document.getElementById("username").value.trim();
         const password = document.getElementById("password").value.trim();
@@ -51,6 +54,6 @@
         }
         return true;
       }
-    </script>
+    </script> -->
   </body>
 </html>

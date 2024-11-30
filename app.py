@@ -4,6 +4,8 @@ from datetime import datetime
 from sqlalchemy.sql import extract
 from sqlalchemy import func
 import os
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
@@ -15,11 +17,49 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 db = SQLAlchemy(app)
 
 
+@app.route('/register_page')
+def register_page():
+     return render_template('register.html')
 
+@app.route('/register', methods=['POST'])
+def register():
+    users=User.query.all()
+   
+    for user in users:
+        print(user.username)
+        print(user.password)
+    username_entered = request.form.get('username') 
+    password_entered = request.form.get('password') 
+    print('trying to fetch')
+    if not username_entered or not password_entered:
+        print('not received')           #handle not fields not entered
+        return redirect(url_for('register_page'))
+    else:
+        if User.query.filter_by(username=username_entered).first(): 
+            flash('Username already exists. Please choose a different one.', 'danger') 
+            return redirect(url_for('register_page')) # Hash the password 
+        new_user = User(username=username_entered)
+        new_user.set_password(password_entered)
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect(url_for('home'))
+    
 @app.route('/signin_button', methods=['POST'])
 def signin_button():
-    # Handle the button click here
-    return redirect(url_for('dashboard'))
+    button_pressed=request.form['login_buttons']
+    if button_pressed=="REGISTER":
+        return redirect(url_for('register_page'))
+    else:
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
+
+        if user and user.check_password(password):
+            print('Login successful!')
+            return redirect(url_for('dashboard'))
+        else:
+            print('Invalid email or password.')
+            return render_template('index.html')
 
 
 @app.route('/sidebar_buttons', methods=['POST'])
@@ -39,7 +79,20 @@ def sidebar_buttons():
         return redirect(url_for('home'))
     
 
+class User(db.Model,UserMixin):
+    __tablename__='users'
 
+    id=db.Column(db.Integer,primary_key=True,autoincrement=True)
+    username=db.Column(db.String(20),nullable=False,unique=True)
+    password=db.Column(db.String(30),nullable=False)
+
+    def __repr__(self):
+        return f"Username {self.username}"
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
 # Brand and BrickType Models
 class Brand(db.Model):
