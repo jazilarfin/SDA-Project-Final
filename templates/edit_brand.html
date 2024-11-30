@@ -66,7 +66,7 @@ Edit Brand
                 <input type="text" name="principal_contact"
                     id="principal_contact"
                     class="form-control" value="{{ brand.principal_contact }}"
-                    placeholder="Enter contact" required>
+                    placeholder="Enter contact 10 to 15 digit"  pattern="^\d{10,15}$" required>
             </div>
             <div class="mb-3">
                 <label for="contact_no" class="form-label">Contact No.</label>

@@ -10,52 +10,32 @@
 
 {% block maincontent %}
 
-
-<nav class="navbar navbar-expand-lg"
-    style="background-color: #007b7b; border-radius: 10px; padding: 5px 25px; height: 45px; width: 80%;">
+<nav class="navbar navbar-expand-lg" style="background-color: #007b7b; border-radius: 10px; padding: 5px 25px; height: 45px; width: 80%;">
     <div class="container-fluid d-flex align-items-center">
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav d-flex align-items-center">
                 <li class="nav-item">
-                    <a class="nav-link text-black"
-                        href="{{ url_for('orders') }}"
-                        style="background-color: white; color: black; border-radius: 5px; padding: 5px 15px; height: 35px; line-height: 25px; transition: all 0.3s ease; text-decoration: none;"
-                        onmouseover="this.style.backgroundColor='#f0f0f0'; this.style.color='white';"
-                        onmouseout="this.style.backgroundColor='white'; this.style.color='black';">Orders</a>
+                    <a class="nav-link text-black" href="{{ url_for('orders') }}" style="background-color: white; color: black; border-radius: 5px; padding: 5px 15px; height: 35px; line-height: 25px; transition: all 0.3s ease; text-decoration: none;" onmouseover="this.style.backgroundColor='#f0f0f0'; this.style.color='white';" onmouseout="this.style.backgroundColor='white'; this.style.color='black';">Orders</a>
                 </li>
-                <li class="mx-1"
-                    style="color: white;padding-bottom: 5px; font-size: 40px; font-weight:300">&gt;</li>
+                <li class="mx-1" style="color: white;padding-bottom: 5px; font-size: 40px; font-weight:300">&gt;</li>
                 <li class="nav-item">
-                    <a class="nav-link text-black" href="{{ url_for('order_details', order_id=order.id) }}"
-                        style="background-color: white; color: black; border-radius: 5px; padding: 5px 15px; height: 35px; line-height: 25px; text-decoration: none;">Order
-                        Details</a>
+                    <a class="nav-link text-black" href="{{ url_for('order_details', order_id=order.id) }}" style="background-color: white; color: black; border-radius: 5px; padding: 5px 15px; height: 35px; line-height: 25px; text-decoration: none;">Order Details</a>
                 </li>
-                <li class="mx-1"
-                    style="color: white;padding-bottom: 5px; font-size: 40px; font-weight:300">&gt;</li>
+                <li class="mx-1" style="color: white;padding-bottom: 5px; font-size: 40px; font-weight:300">&gt;</li>
                 <li class="nav-item">
-                    <a class="nav-link text-black" href="#"
-                        style="background-color: white; color: black; border-radius: 5px; padding: 5px 15px; height: 35px; line-height: 25px; text-decoration: none;">Edit
-                        Order</a>
+                    <a class="nav-link text-black" href="#" style="background-color: white; color: black; border-radius: 5px; padding: 5px 15px; height: 35px; line-height: 25px; text-decoration: none;">Edit Order</a>
                 </li>
             </ul>
         </div>
     </div>
 </nav>
 
-
-
-
-
-
-<!-- <div class="container mt-4" style="padding-top: 10px;"> -->
 <div class="d-flex flex-column gap-4" style="padding-top: 10px; width:80%">
 
     <form action="{{ url_for('edit_order', order_id=order.id) }}" method="POST">
         
         <!-- Customer Details Section -->
-        <!-- <div class="card mb-4" style="width: 1200px;"> -->
-        <div class="card mb-4" >
-        
+        <div class="card mb-4">
             <div class="card-header text-white" style="background-color: #007B7B;">
                 <h5 class="mb-0">Customer Details</h5>
             </div>
@@ -66,7 +46,8 @@
                 </div>
                 <div class="mb-3">
                     <label for="contact" class="form-label">Contact</label>
-                    <input type="text" name="contact" id="contact" class="form-control" value="{{ order.customer_contact }}" required>
+                    <input type="text" name="contact" id="contact" class="form-control" pattern="^\d{10,15}$" 
+                     value="{{ order.customer_contact }}" required>
                 </div>
                 <div class="mb-3">
                     <label for="address" class="form-label">Address</label>
@@ -84,29 +65,15 @@
             <div class="card-header text-white" style="background-color: #007B7B;">
                 <h5 class="mb-0">Transportation Details</h5>
             </div>
-
             <div class="card-body">
                 <div class="mb-3">
                     <label for="vehicle_id" class="form-label">Vehicle Registration Number</label>
-                    <!-- <input type="text" name="vehicle_reg_number" id="vehicle_reg_number" class="form-control" value="{{ order.vehicle.registration_no }}" required> -->
-                    
                     <select name="vehicle_id" id="vehicle_id" class="form-control" required>
                         <option value disabled selected>{{ order.vehicle.registration_no }}</option>
-                        
                         {% for vehicle in vehicles %}
                             <option value="{{ vehicle.id }}">{{ vehicle.registration_no }} - {{ vehicle.vehicle_type }}</option>
                         {% endfor %}
                     </select>
-
-                    <!-- <select name="vehicle_id" id="vehicle_id" class="form-control" required>
-                        <option value="" disabled>Select Vehicle</option>
-                        {% for vehicle in vehicles %}
-                            <option value="{{ vehicle.id }}" {% if vehicle.id == order.vehicle_id %} selected {% endif %}>
-                                {{ vehicle.registration_no }} - {{ vehicle.vehicle_type }}
-                            </option>
-                        {% endfor %}
-                    </select> -->
-                    
                 </div>
                 <div class="mb-3">
                     <label for="vehicle_rent" class="form-label">Vehicle Rent</label>
@@ -120,69 +87,17 @@
                 </div>
                 <div class="mb-3">
                     <label for="salesman_name" class="form-label">Salesman Name</label>
-                    <!-- <input type="text" name="salesman_name" id="salesman_name" class="form-control" value="{{ order.salesman_name }}" required> -->
-                    
-                    <select name="salesman_id" id="vehicle_id" class="form-control" required>
+                    <select name="salesman_id" id="salesman_id" class="form-control" required>
                         <option value disabled selected>{{ order.salesman.name }}</option>
-                        
                         {% for salesman in salesmen %}
                             <option value="{{ salesman.id }}">{{ salesman.name }} </option>
                         {% endfor %}
                     </select>
-                
                 </div>
             </div>
         </div>
 
         <!-- Item Details Section -->
-        <!-- <div class="section card mb-4" id="item-details-container">
-            <div class="card-header text-white" style="background-color: #007B7B;">
-                <h5 class="mb-0">Item Details</h5>
-            </div>
-            <div class="card-body">
-                {% for item in order.items %}
-                <div class="item-details mb-4">
-                    <h5>Item {{ loop.index }}</h5>
-
-                    <div class="mb-3">
-                        <label for="brand_{{ loop.index }}" class="form-label">Brand</label>
-                        
-                        <select name="brand_{{ loop.index }}" id="brand_{{ loop.index }}" class="form-control" required>
-                            <option value disabled selected>{{ item.brand.name }} </option>
-                            {% for brand in brands %}
-                                <option value="{{ brand.id }}">{{brand.name }}</option>
-                            {% endfor %}
-                        </select>
-                    
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="brick_type_{{ loop.index }}" class="form-label">Brick Type</label>
-                        
-                        <select name="brick_type_{{ loop.index }}" id="brick_type_{{ loop.index }}" class="form-control" required>
-                            <option value disabled selected>{{item.brick_type_name}}</option>
-                            {% for brick in bricks %}
-                                <option value="{{ brick.type_name }}" data-brand-id="{{ brick.brand_id }}">{{brick.type_name }}</option>
-                            {% endfor %}
-                        </select>
-                    
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="quantity_{{ loop.index }}" class="form-label">Quantity</label>
-                        <input type="number" name="quantity_{{ loop.index }}" id="quantity_{{ loop.index }}" 
-                               class="form-control" value="{{ item.quantity }}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="price_{{ loop.index }}" class="form-label">Price</label>
-                        <input type="number" name="price_{{ loop.index }}" id="price_{{ loop.index }}" 
-                               class="form-control" value="{{ item.price }}" required>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div> -->
-
         <div class="section card mb-4" id="item-details-container">
             <div class="card-header text-white" style="background-color: #007B7B;">
                 <h5 class="mb-0">Item Details</h5>
@@ -191,10 +106,10 @@
                 {% for item in order.items %}
                 <div class="item-details mb-4">
                     <h5>Item {{ loop.index }}</h5>
-        
+
                     <!-- Hidden input to include the item ID -->
                     <input type="hidden" name="item_id[]" value="{{ item.id }}">
-        
+
                     <div class="mb-3">
                         <label for="brand_{{ loop.index }}" class="form-label">Brand</label>
                         <select name="brand[]" id="brand_{{ loop.index }}" class="form-control" required>
@@ -205,22 +120,22 @@
                             {% endfor %}
                         </select>
                     </div>
-        
+
                     <div class="mb-3">
                         <label for="brick_type_{{ loop.index }}" class="form-label">Brick Type</label>
                         <select name="brick_type[]" id="brick_type_{{ loop.index }}" class="form-control" required>
                             {% for brick in bricks %}
-                                <option value="{{ brick.type_name }}" {% if item.brick_type_name == brick.type_name %}selected{% endif %}>
+                                <option value="{{ brick.type_name }}" data-brand-id="{{ brick.brand_id }}" {% if item.brick_type_name == brick.type_name %}selected{% endif %}>
                                     {{ brick.type_name }}
                                 </option>
                             {% endfor %}
                         </select>
                     </div>
-        
+
                     <div class="mb-3">
                         <label for="quantity_{{ loop.index }}" class="form-label">Quantity</label>
                         <input type="number" name="quantity[]" id="quantity_{{ loop.index }}" 
-                               class="form-control" value="{{ item.quantity }}" min="0" required>
+                               class="form-control" value="{{ item.quantity }}" min="1" required>
                     </div>
                     
                     <div class="mb-3">
@@ -232,7 +147,6 @@
                 {% endfor %}
             </div>
         </div>
-        
 
         <!-- Submit Button -->
         <div class="text-end" style="padding-bottom: 50px;">
@@ -242,4 +156,23 @@
 
     </form>
 </div>
+
+<script>
+    {% for item in order.items %}
+        document.getElementById("brand_{{ loop.index }}").addEventListener('change', function() {
+            var selectedBrandId = this.value;
+            var brickTypeSelect = document.getElementById("brick_type_{{ loop.index }}");
+
+            // Show only bricks that match the selected brand
+            Array.from(brickTypeSelect.options).forEach(function(option) {
+                if (option.getAttribute('data-brand-id') === selectedBrandId) {
+                    option.style.display = "block";
+                } else {
+                    option.style.display = "none";
+                }
+            });
+        });
+    {% endfor %}
+</script>
+
 {% endblock %}

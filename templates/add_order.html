@@ -10,7 +10,6 @@ Add New Order
 {% endblock %}
 
 {% block maincontent %}
-
 <nav class="navbar navbar-expand-lg"
     style="background-color: #007b7b; border-radius: 10px; padding: 5px 15px; height: 45px; width: 80%;">
     <div class="container-fluid d-flex align-items-center">
@@ -36,11 +35,9 @@ Add New Order
 
 <div class="d-flex flex-column gap-4" style="padding-top: 10px; width: 80%;">
     <form action="{{ url_for('add_order') }}" method="POST">
-
         <!-- Customer Details Section -->
         <div class="card mb-4">
-            <div class="card-header text-white"
-                style="background-color: #007B7B;">
+            <div class="card-header text-white" style="background-color: #007B7B;">
                 <h5 class="mb-0">Customer Details</h5>
             </div>
             <div class="card-body">
@@ -50,7 +47,7 @@ Add New Order
                 </div>
                 <div class="mb-3">
                     <label for="contact" class="form-label">Contact</label>
-                    <input type="text" name="customer_contact" id="contact" class="form-control" placeholder="Enter contact number" required>
+                    <input type="text" name="customer_contact" id="contact" class="form-control" placeholder="Enter contact number 10 to 15 digit " required>
                 </div>
                 <div class="mb-3">
                     <label for="address" class="form-label">Address</label>
@@ -63,31 +60,19 @@ Add New Order
             </div>
         </div>
 
-        <!--Other Details-->
-        
-
         <!-- Transportation Details Section -->
         <div class="card mb-4">
-            <div class="card-header text-white"
-                style="background-color: #007B7B;">
+            <div class="card-header text-white" style="background-color: #007B7B;">
                 <h5 class="mb-0">Transportation Details</h5>
             </div>
             <div class="card-body">
-                <!--
-                <div class="mb-3">
-                    <label for="vehicle_reg_number" class="form-label">Vehicle Registration Number</label>
-                    <input type="text" name="vehicle_reg_number" id="vehicle_reg_number" class="form-control" placeholder="Enter vehicle reg number" required>
-                </div> -->
                 <div class="mb-3">
                     <label for="vehicle_id" class="form-label">Vehicle Registration Number</label>
                     <select name="vehicle_id" id="vehicle_id" class="form-control" required>
                         <option value disabled selected>Select a vehicle</option>
-                        
                         {% for vehicle in vehicles %}
-                            <option value="{{ vehicle.id }}">{{ vehicle.registration_no }} - {{ vehicle.vehicle_type }}</option>
+                        <option value="{{ vehicle.id }}">{{ vehicle.registration_no }} - {{ vehicle.vehicle_type }}</option>
                         {% endfor %}
-
-
                     </select>
                 </div>
                 <div class="mb-3">
@@ -96,81 +81,64 @@ Add New Order
                 </div>
                 <div class="mb-3">
                     <label for="labor_cost" class="form-label">Labor Cost</label>
-                    <input type="number" name="labor_cost" id="labor_cost" class="form-control" placeholder="Enter labor cost"  min="0" required>
+                    <input type="number" name="labor_cost" id="labor_cost" class="form-control" placeholder="Enter labor cost" min="0" required>
                 </div>
-                <!--<div class="mb-3">
-                    <label for="salesman_name" class="form-label">Salesman Name</label>
-                    <input type="text" name="salesman_name" id="salesman_name" class="form-control" placeholder="Enter salesman name" required>
-                </div> -->
                 <div class="mb-3">
                     <label for="salesman_id" class="form-label">Select Salesman</label>
                     <select name="salesman_id" id="salesman_id" class="form-control" required>
-
                         <option value disabled selected>Select Salesman</option>
                         {% for salesman in salesmen %}
-                            <option value="{{ salesman.id }}">{{ salesman.name }}</option>
+                        <option value="{{ salesman.id }}">{{ salesman.name }}</option>
                         {% endfor %}
                     </select>
-                    <!-- <small class="form-text text-muted">Choose from the existing vehicles or enter a new one.</small> -->
                 </div>
             </div>
         </div>
 
         <!-- Item Details Section -->
         <div class="section card mb-4" id="item-details-container">
-            <div class="card-header text-white"
-                style="background-color: #007B7B;">
+            <div class="card-header text-white" style="background-color: #007B7B;">
                 <h5 class="mb-0">Item Details</h5>
             </div>
             <div class="item-details card-body" id="item-details-template">
                 <h5>Item 1</h5>
-
                 <div class="mb-3">
                     <label for="brand_1" class="form-label">Brand</label>
-                    <!-- <input type="text" name="brand" id="brand" class="form-control" placeholder="Enter brand" required> -->
-                    <select name="brand_1" id="brand" class="form-control" required>
-                        <option value disabled selected>Select Brand </option>
+                    <select name="brand_1" id="brand_1" class="form-control dynamic-brand" required>
+                        <option value disabled selected>Select Brand</option>
                         {% for brand in brands %}
-                            <option value="{{ brand.id }}">{{brand.name }}</option>
+                        <option value="{{ brand.id }}">{{ brand.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
-
                 <div class="mb-3">
                     <label for="brick_type_1" class="form-label">Brick Type</label>
-                    <select name="brick_type_1" id="brick_type_1" class="form-control" required>
+                    <select name="brick_type_1" id="brick_type_1" class="form-control dynamic-brick" required>
                         <option value disabled selected>Select Brick Type</option>
                         {% for brick in bricks %}
-                            <option value="{{ brick.type_name }}" data-brand-id="{{ brick.brand_id }}">{{brick.type_name }}</option>
+                        <option value="{{ brick.type_name }}" data-brand-id="{{ brick.brand_id }}">{{ brick.type_name }}</option>
                         {% endfor %}
                     </select>
-
                 </div>
-                
                 <div class="mb-3">
                     <label for="quantity_1" class="form-label">Quantity</label>
-                    <input type="number" name="quantity_1" id="quantity" class="form-control" placeholder="Enter quantity"  min="0" required>
+                    <input type="number" name="quantity_1" id="quantity_1" class="form-control" placeholder="Enter quantity" min="0" required>
                 </div>
                 <div class="mb-3">
                     <label for="price_1" class="form-label">Price</label>
-                    <input type="number" name="price_1" id="price" class="form-control" placeholder="Enter price" min="0"  required>
+                    <input type="number" name="price_1" id="price_1" class="form-control" placeholder="Enter price" min="0" required>
                 </div>
             </div>
         </div>
-
         <div class="mb-3">
-            <button type="button" class="btn btn-secondary"
-                id="add-item-btn">Add More Items</button>
+            <button type="button" class="btn btn-secondary" id="add-item-btn">Add More Items</button>
         </div>
 
         <!-- Submit Button -->
         <div class="text-end" style="padding-bottom: 50px;">
-            <!-- <button type="submit" class="btn btn-danger" >Cancel</button> -->
             <button type="submit" class="btn btn-success">Punch Order</button>
-            <a href="{{ url_for('orders') }}"
-                class="btn btn-danger ms-2">Cancel</a>
+            <a href="{{ url_for('orders') }}" class="btn btn-danger ms-2">Cancel</a>
         </div>
-
     </form>
 </div>
 {% endblock %}
@@ -178,129 +146,44 @@ Add New Order
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Handle dynamic brick filtering
+        document.addEventListener('change', function (e) {
+            if (e.target && e.target.classList.contains('dynamic-brand')) {
+                const selectedBrandId = e.target.value;
+                const brickSelect = e.target.closest('.item-details').querySelector('.dynamic-brick');
+
+                // Filter bricks based on selected brand
+                for (const option of brickSelect.options) {
+                    if (option.dataset.brandId === selectedBrandId || option.value === "") {
+                        option.style.display = "block";
+                    } else {
+                        option.style.display = "none";
+                    }
+                }
+
+                // Reset the brick dropdown
+                brickSelect.value = "";
+            }
+        });
+
+        // Handle adding and removing items
         const addItemButton = document.getElementById('add-item-btn');
         const itemDetailsContainer = document.getElementById('item-details-container');
-        let itemCount = 1; // Start with the first item
+        let itemCount = 1;
 
         addItemButton.addEventListener('click', function () {
-            
-             // Validate existing item containers
-            const allItemContainers = itemDetailsContainer.querySelectorAll('.item-details');
-            let isValid = true;
-
-            allItemContainers.forEach((item) => {
-                const inputs = item.querySelectorAll('input');
-                inputs.forEach((input) => {
-                    if (!input.value.trim()) {
-                        input.classList.add('is-invalid'); // Add Bootstrap's validation class
-                        isValid = false;
-                    } else {
-                        input.classList.remove('is-invalid'); // Remove invalid class if filled
-                    }
-                });
+            itemCount++;
+            const newItem = document.querySelector('#item-details-template').cloneNode(true);
+            newItem.id = '';
+            newItem.querySelector('h5').textContent = `Item ${itemCount}`;
+            Array.from(newItem.querySelectorAll('input, select')).forEach((input) => {
+                const name = input.name.replace(/\d+/, itemCount);
+                input.name = name;
+                input.id = name;
+                input.value = '';
             });
-
-            if (!isValid) {
-                alert("Please fill out all fields in the current items before adding a new one.");
-                return; // Exit the function if validation fails
-            }
-
-            itemCount++; // Increment the item count
-            const newItemDetails = document.createElement('div');
-            newItemDetails.classList.add('row', 'mt-2', 'ms-2');
-            newItemDetails.innerHTML = `
-                <div class="item-details card-body">
-                    <div class="col-12 d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Item ${itemCount}</h5>
-                        <button type="button" class="btn btn-danger btn-sm delete-item-btn me-3">Delete Item</button>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="brand_${itemCount}" class="form-label">Brand</label>
-
-                        <select name="brand_${itemCount}" id="brand" class="form-control" required>
-                            <option value disabled selected>Select Brand </option>
-                            {% for brand in brands %}
-                                <option value="{{ brand.id }}">{{brand.name }}</option>
-                            {% endfor %}
-                        </select>
-
-                    
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="brick_type_${itemCount}" class="form-label">Brick Type</label>
-                        
-                        <select name="brick_type_${itemCount}" id="brick_type" class="form-control" required>
-                            <option value disabled selected>Select Brick Type</option>
-                            {% for brick in bricks %}
-                                <option value="{{ brick.type_name }}">{{brick.type_name }}</option>
-                            {% endfor %}
-                        </select>
-
-
-
-                    
-                    </div>
-                    <div class="mb-3">
-                        <label for="quantity_${itemCount}" class="form-label">Quantity</label>
-                        <input type="number" name="quantity_${itemCount}" id="quantity" class="form-control" placeholder="Enter quantity" required style="width: 1210px;">
-                    </div>
-                    <div class="mb-3">
-                        <label for="price_${itemCount}" class="form-label">Price</label>
-                        <input type="number" name="price_${itemCount}" id="price" class="form-control" placeholder="Enter price" required style="width: 1210px;">
-                    </div>
-                </div>
-            `;
-            itemDetailsContainer.appendChild(newItemDetails);
+            itemDetailsContainer.appendChild(newItem);
         });
-
-        // Delete button functionality
-        itemDetailsContainer.addEventListener('click', function (e) {
-            if (e.target && e.target.classList.contains('delete-item-btn')) {
-                const itemDetails = e.target.closest('.item-details');
-                itemDetails.remove(); // Remove the specific item details
-                updateItemHeadings(); // Update headings to maintain proper numbering
-            }
-        });
-
-        // Update item headings after deletion
-        function updateItemHeadings() {
-            const items = document.querySelectorAll('.item-details h5');
-            items.forEach((heading, index) => {
-                heading.textContent = `Item ${index + 1}`;
-            });
-            itemCount = items.length; // Reset the item count to the current number of items
-        }
     });
-
-
-    //this code is to show the bricks only for the particular brand selected
-
-    const brandSelect = document.getElementById('brand_1');
-    const brickSelect = document.getElementById('brick_type_1');
-
-    // Add event listener for the brand change
-    brandSelect.addEventListener('change', function() {
-        const selectedBrandId = brandSelect.value;
-
-        // Loop through all brick options
-        for (const option of brickSelect.options) {
-            // If the option's data-brand-id does not match the selected brand, hide it
-            if (option.dataset.brandId !== selectedBrandId && option.value !== "") {
-                option.style.display = "none";
-            } else {
-                option.style.display = "block";
-            }
-        }
-
-        // Reset the brick type to the default option when brand changes
-        brickSelect.value = "";
-    });
-
-
-
-
-
 </script>
 {% endblock %}
