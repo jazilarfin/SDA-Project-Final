@@ -12,7 +12,7 @@
 
 
 <nav class="navbar navbar-expand-lg"
-    style="background-color: #007b7b; border-radius: 10px; padding: 5px 25px; height: 45px; width: 80%;">
+    style="background-color: #007b7b; border-radius: 10px; padding: 5px 25px; height: 45px; width: 100%;">
     <div class="container-fluid d-flex align-items-center">
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav d-flex align-items-center">
@@ -48,7 +48,7 @@
 
 
 <!-- <div class="container mt-4" style="padding-top: 10px;"> -->
-<div class="d-flex flex-column gap-4" style="padding-top: 10px;width: 80%;">
+<div class="d-flex flex-column gap-4" style="padding-top: 10px;">
 
     <form action="{{ url_for('edit_order', order_id=order.id) }}" method="POST">
         
@@ -62,18 +62,20 @@
             <div class="card-body">
                 <div class="mb-3">
                     <label for="customer_name" class="form-label">Name</label>
-                    <input type="text" name="customer_name" id="customer_name" class="form-control" 
-                           value="{{ order.customer_name }}" required>
+                    <input type="text" name="customer_name" id="customer_name" class="form-control" value="{{ order.customer_name }}" required>
                 </div>
                 <div class="mb-3">
                     <label for="contact" class="form-label">Contact</label>
-                    <input type="text" name="contact" id="contact" class="form-control" 
-                           value="{{ order.contact }}" required>
+                    <input type="text" name="contact" id="contact" class="form-control" value="{{ order.customer_contact }}" required>
                 </div>
                 <div class="mb-3">
                     <label for="address" class="form-label">Address</label>
-                    <textarea name="address" id="address" class="form-control" required>{{ order.address }}</textarea>
+                    <textarea name="address" id="address" class="form-control" required>{{ order.customer_address }}</textarea>
                 </div>
+                <div class="mb-3">
+                    <label for="total_amount" class="form-label">Amount to Charge</label>
+                    <input type="number" name="total_amount" id="total_amount" class="form-control" value="{{ order.total_amount }}"  required>
+                </div>   
             </div>
         </div>
 
@@ -82,26 +84,52 @@
             <div class="card-header text-white" style="background-color: #007B7B;">
                 <h5 class="mb-0">Transportation Details</h5>
             </div>
+            
             <div class="card-body">
                 <div class="mb-3">
-                    <label for="vehicle_reg_number" class="form-label">Vehicle Registration Number</label>
-                    <input type="text" name="vehicle_reg_number" id="vehicle_reg_number" class="form-control" 
-                           value="{{ order.vehicle_reg_number }}" required>
+                    <label for="vehicle_id" class="form-label">Vehicle Registration Number</label>
+                    <!-- <input type="text" name="vehicle_reg_number" id="vehicle_reg_number" class="form-control" value="{{ order.vehicle.registration_no }}" required> -->
+                    
+                    <select name="vehicle_id" id="vehicle_id" class="form-control" required>
+                        <option value disabled selected>{{ order.vehicle.registration_no }}</option>
+                        
+                        {% for vehicle in vehicles %}
+                            <option value="{{ vehicle.id }}">{{ vehicle.registration_no }} - {{ vehicle.vehicle_type }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <!-- <select name="vehicle_id" id="vehicle_id" class="form-control" required>
+                        <option value="" disabled>Select Vehicle</option>
+                        {% for vehicle in vehicles %}
+                            <option value="{{ vehicle.id }}" {% if vehicle.id == order.vehicle_id %} selected {% endif %}>
+                                {{ vehicle.registration_no }} - {{ vehicle.vehicle_type }}
+                            </option>
+                        {% endfor %}
+                    </select> -->
+                    
                 </div>
                 <div class="mb-3">
                     <label for="vehicle_rent" class="form-label">Vehicle Rent</label>
                     <input type="number" name="vehicle_rent" id="vehicle_rent" class="form-control" 
-                           value="{{ order.vehicle_rent }}" min="0" required>
+                           value="{{ order.vehicle_rent }}" required>
                 </div>
                 <div class="mb-3">
                     <label for="labor_cost" class="form-label">Labor Cost</label>
                     <input type="number" name="labor_cost" id="labor_cost" class="form-control" 
-                           value="{{ order.labor_cost }}" min="0" required>
+                           value="{{ order.labor_cost }}" required>
                 </div>
                 <div class="mb-3">
                     <label for="salesman_name" class="form-label">Salesman Name</label>
-                    <input type="text" name="salesman_name" id="salesman_name" class="form-control" 
-                           value="{{ order.salesman_name }}" required>
+                    <!-- <input type="text" name="salesman_name" id="salesman_name" class="form-control" value="{{ order.salesman_name }}" required> -->
+                    
+                    <select name="salesman_id" id="vehicle_id" class="form-control" required>
+                        <option value disabled selected>{{ order.salesman.name }}</option>
+                        
+                        {% for salesman in salesmen %}
+                            <option value="{{ salesman.id }}">{{ salesman.name }} </option>
+                        {% endfor %}
+                    </select>
+                
                 </div>
             </div>
         </div>
@@ -115,25 +143,42 @@
                 {% for item in order.items %}
                 <div class="item-details mb-4">
                     <h5>Item {{ loop.index }}</h5>
-                    <div class="mb-3">
-                        <label for="brick_type_{{ loop.index }}" class="form-label">Brick Type</label>
-                        <input type="text" name="brick_type_{{ loop.index }}" id="brick_type_{{ loop.index }}" 
-                               class="form-control" value="{{ item.brick_type }}" required>
-                    </div>
+
                     <div class="mb-3">
                         <label for="brand_{{ loop.index }}" class="form-label">Brand</label>
-                        <input type="text" name="brand_{{ loop.index }}" id="brand_{{ loop.index }}" 
-                               class="form-control" value="{{ item.brand }}" required>
+                        <!-- <input type="text" name="brand_{{ loop.index }}" id="brand_{{ loop.index }}" class="form-control" value="{{ item.brand }}" required> -->
+                        
+                        <select name="brand_{{ loop.index }}" id="brand_{{ loop.index }}" class="form-control" required>
+                            <option value disabled selected>{{ item.brand.name }} </option>
+                            {% for brand in brands %}
+                                <option value="{{ brand.id }}">{{brand.name }}</option>
+                            {% endfor %}
+                        </select>
+                    
                     </div>
+
+                    <div class="mb-3">
+                        <label for="brick_type_{{ loop.index }}" class="form-label">Brick Type</label>
+                        <!-- <input type="text" name="brick_type_{{ loop.index }}" id="brick_type_{{ loop.index }}" class="form-control" value="{{ item.brick_type_name }}" required> -->
+                        
+                        <select name="brick_type_{{ loop.index }}" id="brick_type_{{ loop.index }}" class="form-control" required>
+                            <option value disabled selected>{{item.brick_type_name}}</option>
+                            {% for brick in bricks %}
+                                <option value="{{ brick.type_name }}" data-brand-id="{{ brick.brand_id }}">{{brick.type_name }}</option>
+                            {% endfor %}
+                        </select>
+                    
+                    </div>
+
                     <div class="mb-3">
                         <label for="quantity_{{ loop.index }}" class="form-label">Quantity</label>
                         <input type="number" name="quantity_{{ loop.index }}" id="quantity_{{ loop.index }}" 
-                               class="form-control" value="{{ item.quantity }}" min="0" required>
+                               class="form-control" value="{{ item.quantity }}" required>
                     </div>
                     <div class="mb-3">
                         <label for="price_{{ loop.index }}" class="form-label">Price</label>
                         <input type="number" name="price_{{ loop.index }}" id="price_{{ loop.index }}" 
-                               class="form-control" value="{{ item.price }}"min="0" required>
+                               class="form-control" value="{{ item.price }}" required>
                     </div>
                 </div>
                 {% endfor %}

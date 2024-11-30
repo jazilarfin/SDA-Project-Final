@@ -13,6 +13,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 db = SQLAlchemy(app)
 
 
+
 @app.route('/signin_button', methods=['POST'])
 def signin_button():
     # Handle the button click here
@@ -54,6 +55,7 @@ class Brand(db.Model):
     def __repr__(self):
         return f"<Brand {self.name} - Location: {self.location}>"
 
+
 class BrickType(db.Model):
     __tablename__ = 'brick_types'
 
@@ -72,38 +74,90 @@ class BrickType(db.Model):
 
 
 
-
-
 # Order and Item Models
+#class Order(db.Model):
+ #   __tablename__ = 'orders'
+#
+ #   id = db.Column(db.Integer, primary_key=True)
+  #  customer_name = db.Column(db.String(50), nullable=False)
+   # contact = db.Column(db.String(15), nullable=False)  # Customer contact number
+    #address = db.Column(db.String(150), nullable=False)  # Delivery address
+   # totalbill = db.Column(db.Integer, nullable=False)  # Delivery address
+
+    #vehicle_reg_number = db.Column(db.String(20), nullable=True)  # Vehicle registration number
+#    vehicle_rent = db.Column(db.Float, nullable=True)  # Rent cost of the vehicle
+ #   labor_cost = db.Column(db.Float, nullable=True)  # Cost of labor
+  #  salesman_name = db.Column(db.String(50), nullable=True)  # Salesperson name
+   # date = db.Column(db.Date, nullable=False, default=datetime.utcnow)  # Order date
+   # items = db.relationship('Item', backref='order', cascade="all, delete-orphan")  # Relationship to Item
+
+    #def __repr__(self):
+     #   return f"<Order {self.id}: {self.customer_name} on {self.date}>"
+#---------------------------------
+
+#naya waal order ka data base
 class Order(db.Model):
     __tablename__ = 'orders'
 
-    id = db.Column(db.Integer, primary_key=True)
-    customer_name = db.Column(db.String(50), nullable=False)
-    contact = db.Column(db.String(15), nullable=False)  # Customer contact number
-    address = db.Column(db.String(150), nullable=False)  # Delivery address
-    vehicle_reg_number = db.Column(db.String(20), nullable=True)  # Vehicle registration number
-    vehicle_rent = db.Column(db.Float, nullable=True)  # Rent cost of the vehicle
-    labor_cost = db.Column(db.Float, nullable=True)  # Cost of labor
-    salesman_name = db.Column(db.String(50), nullable=True)  # Salesperson name
-    date = db.Column(db.Date, nullable=False, default=datetime.utcnow)  # Order date
-    items = db.relationship('Item', backref='order', cascade="all, delete-orphan")  # Relationship to Item
+    id = db.Column(db.Integer, primary_key=True)  # Order ID
+    customer_name = db.Column(db.String(100), nullable=False)  # Customer's name
+    customer_contact = db.Column(db.String(15), nullable=False)  # Customer's contact number
+    customer_address = db.Column(db.String(200), nullable=False)  # Customer's address
+    vehicle_rent = db.Column(db.Float, nullable=False)  # Vehicle rent
+    labor_cost = db.Column(db.Float, nullable=False)  # Labor cost
+    total_amount = db.Column(db.Float, nullable=False)  # Total amount for the order
+    order_date = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+
+    # Foreign keys to the related tables
+    salesman_id = db.Column(db.Integer, db.ForeignKey('salesmen.id'), nullable=False)  # Salesman ID
+    vehicle_id = db.Column(db.Integer, db.ForeignKey('vehicles.id'), nullable=False)  # Vehicle ID
+
+    # Relationships
+    salesman = db.relationship('Salesman', backref=db.backref('orders', lazy=True))  # Salesman relationship
+    vehicle = db.relationship('Vehicle', backref=db.backref('orders', lazy=True))  # Vehicle relationship
+    items = db.relationship('Item', backref=db.backref('order', lazy=True), cascade='all, delete-orphan')  # Items relationship
 
     def __repr__(self):
-        return f"<Order {self.id}: {self.customer_name} on {self.date}>"
+        return f"<Order {self.id}: {self.customer_name}, {self.total_amount}, {self.order_date}>"
 
+
+#--------------------------
+#naya wala item table
 class Item(db.Model):
     __tablename__ = 'items'
 
-    id = db.Column(db.Integer, primary_key=True)
-    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)  # Foreign key to Order
-    brick_type = db.Column(db.String(50), nullable=False)  # Type of bricks
-    brand = db.Column(db.String(50), nullable=False)  # Brand of the bricks
-    quantity = db.Column(db.Integer, nullable=False)  # Quantity of bricks
-    price = db.Column(db.Float, nullable=False)  # Price of bricks
+    id = db.Column(db.Integer, primary_key=True)  # Item ID
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)  # Foreign key to Order table
+    brick_type_name = db.Column(db.String(50), nullable=False)  # Name of the brick type
+    brand_id = db.Column(db.Integer, db.ForeignKey('brands.id'), nullable=False)  # Brand ID
+    quantity = db.Column(db.Integer, nullable=False)  # Quantity of the brick
+    price = db.Column(db.Float, nullable=False)  # Price of the brick
+    total_price = db.Column(db.Float, nullable=False)  # Total price for this item (quantity * price)
+
+    # Relationship to Order
+    #order = db.relationship('Order', backref=db.backref('items', lazy=True))
+
+    # Relationship to Brand
+    brand = db.relationship('Brand', backref=db.backref('items', lazy=True))
 
     def __repr__(self):
-        return f"<Item {self.id}: {self.brick_type} - {self.brand} ({self.quantity} @ {self.price})>"
+        return f"<Item {self.id}: {self.quantity} of {self.brick_type_name} for Order {self.order_id}>"
+
+
+
+
+# class Item(db.Model):
+#     __tablename__ = 'items'
+
+#     id = db.Column(db.Integer, primary_key=True)
+#     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)  # Foreign key to Order
+#     brick_type = db.Column(db.String(50), nullable=False)  # Type of bricks
+#     brand = db.Column(db.String(50), nullable=False)  # Brand of the bricks
+#     quantity = db.Column(db.Integer, nullable=False)  # Quantity of bricks
+#     price = db.Column(db.Float, nullable=False)  # Price of bricks
+
+#     def __repr__(self):
+#         return f"<Item {self.id}: {self.brick_type} - {self.brand} ({self.quantity} @ {self.price})>"
 
 # Vehicle Model
 class Vehicle(db.Model):
@@ -159,7 +213,8 @@ def orders():
     per_page = 5  # Number of orders per page
     # orders_paginated = Order.query.paginate(page=page, per_page=per_page)
 
-    orders_paginated = Order.query.order_by(Order.date.desc()).paginate(page=page, per_page=per_page)
+    # orders_paginated = Order.query.order_by(Order.date.desc()).paginate(page=page, per_page=per_page)
+    orders_paginated = Order.query.order_by(Order.order_date.desc()).paginate(page=page, per_page=per_page)
 
     return render_template('orders.html', orders=orders_paginated.items, pagination=orders_paginated)
 
@@ -177,95 +232,308 @@ def edit_order(order_id):
     if not order:
         flash('Order not found!', 'danger')
         return redirect(url_for('orders'))
-    return render_template('edit_order.html', order=order)
+    
+    vehicles = Vehicle.query.all()  # Fetch all vehicles
+    salesmen = Salesman.query.all()
+    brands = Brand.query.all()
+    bricks = BrickType.query.all()
+    return render_template('edit_order.html', order=order, vehicles=vehicles, salesmen=salesmen, brands=brands, bricks=bricks)
 
 
+
+#pehlay wala edit order route 
+
+# @app.route('/edit_order/<int:order_id>', methods=['POST'])
+# def edit_order_submit(order_id):
+#     order = Order.query.get(order_id)
+#     if not order:
+#         flash('Order not found!', 'danger')
+#         return redirect(url_for('orders'))
+
+#     # Update order details
+#     order.customer_name = request.form['customer_name']
+#     order.contact = request.form['contact']
+#     order.address = request.form['address']
+#     order.vehicle_reg_number = request.form['vehicle_reg_number']
+#     order.vehicle_rent = request.form['vehicle_rent']
+#     order.labor_cost = request.form['labor_cost']
+#     order.salesman_name = request.form['salesman_name']
+
+#     # Update item details
+#     for i, item in enumerate(order.items, start=1):
+#         item.brick_type = request.form[f'brick_type_{i}']
+#         item.brand = request.form[f'brand_{i}']
+#         item.quantity = request.form[f'quantity_{i}']
+#         item.price = request.form[f'price_{i}']
+
+#     db.session.commit()
+#     flash('Order updated successfully!', 'success')
+#     return redirect(url_for('orders'))
+#---------------------------
+
+#naya wala edit order route
 @app.route('/edit_order/<int:order_id>', methods=['POST'])
 def edit_order_submit(order_id):
     order = Order.query.get(order_id)
     if not order:
+        print("hello")
         flash('Order not found!', 'danger')
         return redirect(url_for('orders'))
 
-    # Update order details
-    order.customer_name = request.form['customer_name']
-    order.contact = request.form['contact']
-    order.address = request.form['address']
-    order.vehicle_reg_number = request.form['vehicle_reg_number']
-    order.vehicle_rent = request.form['vehicle_rent']
-    order.labor_cost = request.form['labor_cost']
-    order.salesman_name = request.form['salesman_name']
-
-    # Update item details
-    for i, item in enumerate(order.items, start=1):
-        item.brick_type = request.form[f'brick_type_{i}']
-        item.brand = request.form[f'brand_{i}']
-        item.quantity = request.form[f'quantity_{i}']
-        item.price = request.form[f'price_{i}']
-
-    db.session.commit()
-    flash('Order updated successfully!', 'success')
-    return redirect(url_for('orders'))
-
-
-
-
-
-@app.route('/add_order', methods=['GET', 'POST'])
-def add_order():
     if request.method == 'POST':
         try:
-            customer_name = request.form['customer_name']
-            contact = request.form['contact']
-            address = request.form['address']
-            vehicle_reg_number = request.form['vehicle_reg_number']
-            vehicle_rent = float(request.form['vehicle_rent'])
-            labor_cost = float(request.form['labor_cost'])
-            salesman_name = request.form['salesman_name']
+            print("in try")
+            print(request.form)
+            print("after form print")
+            # Update order details from the form
+            order.customer_name = request.form['customer_name']
+            print("in try 1")
 
-            new_order = Order(
-                customer_name=customer_name,
-                contact=contact,
-                address=address,
-                vehicle_reg_number=vehicle_reg_number,
-                vehicle_rent=vehicle_rent,
-                labor_cost=labor_cost,
-                salesman_name=salesman_name,
-                date=datetime.now()
-            )
+            order.customer_contact = request.form['contact']
+            print("in try 2")
+            order.customer_address = request.form['address']
+            print("in try 3")
 
-            db.session.add(new_order)
-            db.session.flush()
+            order.vehicle_id = request.form['vehicle_id']  # Select vehicle ID, not registration number
+            print("in try 4")
+            
+            order.vehicle_rent = float(request.form['vehicle_rent'])
+            print("in try 5")
+            
+            order.labor_cost = float(request.form['labor_cost'])
+            print("in try 6")
+            
+            order.total_amount = float(request.form['total_amount'])  # Assuming the user enters this or it's calculated
+            print("in try 7")
+            
+            #order.order_date = datetime.strptime(request.form['order_date'], '%Y-%m-%d %H:%M:%S')  # Assuming date format
+            print("in try 8")
+            # Update salesman ID
+            order.salesman_id = request.form['salesman_id']
 
-            items_count = len(request.form.getlist('brick_type'))
-            for i in range(items_count):
-                brick_type = request.form.getlist('brick_type')[i]
-                brand = request.form.getlist('brand')[i]
-                quantity = int(request.form.getlist('quantity')[i])
-                price = float(request.form.getlist('price')[i])
 
-                new_item = Item(
-                    order_id=new_order.id,
-                    brick_type=brick_type,
-                    brand=brand,
-                    quantity=quantity,
-                    price=price
-                )
 
-                db.session.add(new_item)
+            print("all updated")
+            # Update item details
+            # First, clear the existing items for this order
+            #order.items.clear()
+            print("items clear")
+            # Add new items
+            # Update existing items
+            existing_items = {item.id: item for item in order.items}
+
+             # Get the list of submitted items from the form
+            submitted_items = request.form.getlist('item_id')  # IDs of the items in the form
+            submitted_item_data = {
+                int(request.form.getlist('item_id')[i]): {
+                    'brick_type': request.form.getlist('brick_type')[i],
+                    'brand': request.form.getlist('brand')[i],
+                    'quantity': int(request.form.getlist('quantity')[i]),
+                    'price': float(request.form.getlist('price')[i]),
+                }
+                for i in range(len(submitted_items))
+            }
+
+            # Update or delete existing items
+            for item_id, item in existing_items.items():
+                if item_id in submitted_item_data:
+                    # Update the item if it's still in the form
+                    item_data = submitted_item_data[item_id]
+                    item.brick_type = item_data['brick_type']
+                    item.brand = item_data['brand']
+                    item.quantity = item_data['quantity']
+                    item.price = item_data['price']
+                    db.session.add(item)  # Save the updates
+                else:
+                    # Delete the item if it's not in the form
+                    db.session.delete(item)
+
 
             db.session.commit()
-            flash("Order and items added successfully!", "success")
+            flash('Order updated successfully!', 'success')
             return redirect(url_for('orders'))
 
         except Exception as e:
             db.session.rollback()
+            flash(f"An error occurred: {e}", 'danger')
+            return render_template('edit_order.html', order=order)
+    
+    return render_template('edit_order.html', order=order)
+
+
+    # print(vehicles)  # This will output the list of vehicles to the console
+ 
+
+
+
+
+#pehlay wala add order route
+
+# @app.route('/add_order', methods=['GET', 'POST'])
+# def add_order():
+#     if request.method == 'POST':
+#         try:
+#             customer_name = request.form['customer_name']
+#             customer_contact = request.form['customer_contact']
+#             customer_address = request.form['customer_address']
+#             vehicle_reg_number = request.form['vehicle_reg_number']
+#             vehicle_rent = float(request.form['vehicle_rent'])
+#             labor_cost = float(request.form['labor_cost'])
+#             salesman_name = request.form['salesman_name']
+
+#             new_order = Order(
+#                 customer_name=customer_name,
+#                 customer_contact=customer_contact,
+#                 customer_address=customer_address,
+#                 vehicle_reg_number=vehicle_reg_number,
+#                 vehicle_rent=vehicle_rent,
+#                 labor_cost=labor_cost,
+#                 salesman_name=salesman_name,
+#                 date=datetime.now()
+#             )
+
+#             db.session.add(new_order)
+#             db.session.flush()
+
+#             items_count = len(request.form.getlist('brick_type'))
+#             for i in range(items_count):
+#                 brick_type = request.form.getlist('brick_type')[i]
+#                 brand = request.form.getlist('brand')[i]
+#                 quantity = int(request.form.getlist('quantity')[i])
+#                 price = float(request.form.getlist('price')[i])
+
+#                 new_item = Item(
+#                     order_id=new_order.id,
+#                     brick_type=brick_type,
+#                     brand=brand,
+#                     quantity=quantity,
+#                     price=price
+#                 )
+
+#                 db.session.add(new_item)
+
+#             db.session.commit()
+#             flash("Order and items added successfully!", "success")
+#             return redirect(url_for('orders'))
+
+#         except Exception as e:
+#             db.session.rollback()
+#             flash(f"An error occurred: {e}", "danger")
+#             return render_template('add_order.html')
+#     vehicles = Vehicle.query.all()
+#     return render_template('add_order.html' , vehicles=vehicles)
+
+#-------------
+#naya wala add order route
+@app.route('/add_order', methods=['GET', 'POST'])
+def add_order():
+    if request.method == 'POST':
+        try:
+            # Collecting the form data from the request
+            customer_name = request.form['customer_name']
+            customer_contact = request.form['customer_contact']
+            customer_address = request.form['customer_address']
+            vehicle_id = request.form['vehicle_id']  # Use vehicle_id from the form
+            salesman_id = request.form['salesman_id']  # Use vehicle_id from the form
+
+            vehicle_rent = float(request.form['vehicle_rent'])
+            labor_cost = float(request.form['labor_cost'])
+            total_amount = float(request.form['total_amount'])  # Assuming total_amount is calculated
+            order_date = datetime.now()  # Use current timestamp for order date
+
+            # Retrieve the vehicle object using vehicle_id
+            vehicle = Vehicle.query.get(vehicle_id)
+            # if not vehicle:
+            #     flash("Vehicle not found!", "danger")
+            #     return redirect(url_for('add_order'))
+            salesman = Salesman.query.get(salesman_id)
+
+            # Retrieve the salesman ID (by name)
+            # salesman = Salesman.query.filter_by(name=request.form['salesman_name']).first()
+            # if not salesman:
+            #     flash("Salesman not found!", "danger")
+            #     return redirect(url_for('add_order'))
+            #print(request.form)
+            # Create a new order
+            new_order = Order(
+                customer_name=customer_name,
+                customer_contact=customer_contact,
+                customer_address=customer_address,
+                vehicle_rent=vehicle_rent,
+                labor_cost=labor_cost,
+                total_amount=total_amount,
+                order_date=order_date,
+                vehicle_id=vehicle.id,  # Store the vehicle ID
+                salesman_id=salesman.id  # Store the salesman ID
+            )
+
+            db.session.add(new_order)
+            db.session.flush()  # Flush to get the new order's ID
+
+
+            print(f"Brick Types: {request.form.getlist('brick_type_1')}")
+            print(f"Brands: {request.form.getlist('brand_1')}")
+            print(f"Quantities: {request.form.getlist('quantity_1')}")
+            print(f"Prices: {request.form.getlist('price_1')}")
+
+
+            item_index = 1  # Start with the first item
+            while f'brick_type_{item_index}' in request.form:
+                # Extract the data for this item
+                print("in loop")
+                brick_type = request.form.get(f'brick_type_{item_index}')
+                print(brick_type)
+                brand = request.form.get(f'brand_{item_index}')
+                print(brand)
+                quantity = int(request.form.get(f'quantity_{item_index}', 0))
+                print(quantity)
+                price = float(request.form.get(f'price_{item_index}', 0.0))
+                print(price)
+                total_price = quantity * price
+                print("in loop 1")    
+
+                # Create a new item and add it to the session
+                new_item = Item(
+                    order_id=new_order.id,
+                    brick_type_name=brick_type,
+                    brand_id=int(brand),
+                    quantity=quantity,
+                    price=price,
+                    total_price=total_price
+                )
+                print("in loop 2")
+
+                db.session.add(new_item)
+                item_index += 1  # Move to the next item
+                print("item added")
+
+            # Commit the changes
+
+            print("out loop")
+
+            db.session.commit()
+            print("committed")
+            flash("Order and items added successfully!", "success")
+            print("redirecting")
+            return redirect(url_for('orders'))
+
+        except Exception as e:
+            db.session.rollback()
+            print("rollbackho gaya")
+
             flash(f"An error occurred: {e}", "danger")
             return render_template('add_order.html')
+
+    # Retrieve all vehicles for dropdown
     vehicles = Vehicle.query.all()
-    return render_template('add_order.html' , vehicles=vehicles)
+    # Retrieve all salesmen for dropdown
+    salesmen = Salesman.query.all()
+    # Retrieve all brands for dropdown
+    brands = Brand.query.all()
 
+    bricks = BrickType.query.all()
 
+    return render_template('add_order.html', vehicles=vehicles, salesmen=salesmen, brands=brands, bricks=bricks)
 
 
 

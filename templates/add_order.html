@@ -12,7 +12,7 @@ Add New Order
 {% block maincontent %}
 
 <nav class="navbar navbar-expand-lg"
-    style="background-color: #007b7b; border-radius: 10px; padding: 5px 15px; height: 45px; width: 80%;">
+    style="background-color: #007b7b; border-radius: 10px; padding: 5px 15px; height: 45px; width: 100%;">
     <div class="container-fluid d-flex align-items-center">
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav d-flex align-items-center">
@@ -26,8 +26,7 @@ Add New Order
                 <li class="mx-1"
                     style="color: white;padding-bottom: 5px; font-size: 40px; font-weight:300">&gt;</li>
                 <li class="nav-item">
-                    <a class="nav-link text-black" href="#"
-                        style="background-color: white; color: black; border-radius: 5px; padding: 5px 15px; height: 35px; line-height: 25px;">Add
+                    <a class="nav-link text-black" href="#" style="background-color: white; color: black; border-radius: 5px; padding: 5px 15px; height: 35px; line-height: 25px;">Add
                         Order</a>
                 </li>
             </ul>
@@ -35,7 +34,7 @@ Add New Order
     </div>
 </nav>
 
-<div class="d-flex flex-column gap-4" style="padding-top: 10px;width: 80%;">
+<div class="d-flex flex-column gap-4" style="padding-top: 10px;">
     <form action="{{ url_for('add_order') }}" method="POST">
 
         <!-- Customer Details Section -->
@@ -47,24 +46,25 @@ Add New Order
             <div class="card-body">
                 <div class="mb-3">
                     <label for="customer_name" class="form-label">Name</label>
-                    <input type="text" name="customer_name" id="customer_name"
-                        class="form-control" placeholder="Enter customer name"
-                        required>
+                    <input type="text" name="customer_name" id="customer_name" class="form-control" placeholder="Enter customer name" required>
                 </div>
                 <div class="mb-3">
                     <label for="contact" class="form-label">Contact</label>
-                    <input type="text" name="contact" id="contact"
-                        class="form-control" placeholder="Enter contact number"
-                        required>
+                    <input type="text" name="customer_contact" id="contact" class="form-control" placeholder="Enter contact number" required>
                 </div>
                 <div class="mb-3">
                     <label for="address" class="form-label">Address</label>
-                    <textarea name="address" id="address" class="form-control"
-                        placeholder="Enter customer address"
-                        required></textarea>
+                    <textarea name="customer_address" id="address" class="form-control" placeholder="Enter customer address" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="total_amount" class="form-label">Amount to Charge</label>
+                    <input type="number" name="total_amount" id="total_amount" class="form-control" placeholder="Enter total amount" required>
                 </div>
             </div>
         </div>
+
+        <!--Other Details-->
+        
 
         <!-- Transportation Details Section -->
         <div class="card mb-4">
@@ -79,47 +79,36 @@ Add New Order
                     <input type="text" name="vehicle_reg_number" id="vehicle_reg_number" class="form-control" placeholder="Enter vehicle reg number" required>
                 </div> -->
                 <div class="mb-3">
-                    <label for="vehicle_reg_number" class="form-label">Vehicle
-                        Registration Number</label>
-                    <select name="vehicle_reg_number" id="vehicle_reg_number"
-                        class="form-control" required>
-                        <option value disabled selected>Select a
-                            vehicle</option>
+                    <label for="vehicle_id" class="form-label">Vehicle Registration Number</label>
+                    <select name="vehicle_id" id="vehicle_id" class="form-control" required>
+                        <option value disabled selected>Select a vehicle</option>
+                        
                         {% for vehicle in vehicles %}
-                        <option value="{{ vehicle.registration_no }}">{{
-                            vehicle.registration_no }} - {{ vehicle.vehicle_type
-                            }}</option>
+                            <option value="{{ vehicle.id }}">{{ vehicle.registration_no }} - {{ vehicle.vehicle_type }}</option>
                         {% endfor %}
+
+
                     </select>
-                    <!-- <small class="form-text text-muted">Choose from the existing vehicles or enter a new one.</small> -->
                 </div>
                 <div class="mb-3">
-                    <label for="vehicle_rent" class="form-label">Vehicle
-                        Rent</label>
-                    <input type="number" name="vehicle_rent" id="vehicle_rent"
-                        class="form-control" placeholder="Enter vehicle rent" min="0"
-                        required>
+                    <label for="vehicle_rent" class="form-label">Vehicle Rent</label>
+                    <input type="number" name="vehicle_rent" id="vehicle_rent" class="form-control" placeholder="Enter vehicle rent" required>
                 </div>
                 <div class="mb-3">
-                    <label for="labor_cost" class="form-label">Labor
-                        Cost</label>
-                    <input type="number" name="labor_cost" id="labor_cost"
-                        class="form-control" placeholder="Enter labor cost" min="0"
-                        required>
+                    <label for="labor_cost" class="form-label">Labor Cost</label>
+                    <input type="number" name="labor_cost" id="labor_cost" class="form-control" placeholder="Enter labor cost" required>
                 </div>
                 <!--<div class="mb-3">
                     <label for="salesman_name" class="form-label">Salesman Name</label>
                     <input type="text" name="salesman_name" id="salesman_name" class="form-control" placeholder="Enter salesman name" required>
                 </div> -->
                 <div class="mb-3">
-                    <label for="salesman_name" class="form-label">Vehicle
-                        Registration Number</label>
-                    <select name="salesman_name" id="salesman_name"
-                        class="form-control" required>
+                    <label for="salesman_id" class="form-label">Select Salesman</label>
+                    <select name="salesman_id" id="salesman_id" class="form-control" required>
+
                         <option value disabled selected>Select Salesman</option>
                         {% for salesman in salesmen %}
-                        <option value="{{ salesman.name }}">{{ salesman.name }}
-                        </option>
+                            <option value="{{ salesman.id }}">{{ salesman.name }}</option>
                         {% endfor %}
                     </select>
                     <!-- <small class="form-text text-muted">Choose from the existing vehicles or enter a new one.</small> -->
@@ -137,35 +126,34 @@ Add New Order
                 <h5>Item 1</h5>
 
                 <div class="mb-3">
-                    <label for="brick_type_1" class="form-label">Brick
-                        Type</label>
-                    <select name="brick_type_1" id="brick_type_1"
-                        class="form-control" required>
-                        <option value disabled selected>Select Brick
-                            Type</option>
-                        {% for vehicle in vehicles %}
-                        <option value="{{ vehicle.registration_no }}">{{
-                            vehicle.registration_no }} - {{ vehicle.vehicle_type
-                            }}</option>
+                    <label for="brand_1" class="form-label">Brand</label>
+                    <!-- <input type="text" name="brand" id="brand" class="form-control" placeholder="Enter brand" required> -->
+                    <select name="brand_1" id="brand" class="form-control" required>
+                        <option value disabled selected>Select Brand </option>
+                        {% for brand in brands %}
+                            <option value="{{ brand.id }}">{{brand.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="brick_type_1" class="form-label">Brick Type</label>
+                    <select name="brick_type_1" id="brick_type_1" class="form-control" required>
+                        <option value disabled selected>Select Brick Type</option>
+                        {% for brick in bricks %}
+                            <option value="{{ brick.type_name }}" data-brand-id="{{ brick.brand_id }}">{{brick.type_name }}</option>
                         {% endfor %}
                     </select>
 
                 </div>
-                <div class="mb-3">
-                    <label for="brand_1" class="form-label">Brand</label>
-                    <input type="text" name="brand" id="brand"
-                        class="form-control" placeholder="Enter brand" required>
-                </div>
+                
                 <div class="mb-3">
                     <label for="quantity_1" class="form-label">Quantity</label>
-                    <input type="number" name="quantity" id="quantity"
-                        class="form-control" placeholder="Enter quantity" min="0"
-                        required>
+                    <input type="number" name="quantity_1" id="quantity" class="form-control" placeholder="Enter quantity" required>
                 </div>
                 <div class="mb-3">
                     <label for="price_1" class="form-label">Price</label>
-                    <input type="number" name="price" id="price"
-                        class="form-control" placeholder="Enter price"min="0" required>
+                    <input type="number" name="price_1" id="price" class="form-control" placeholder="Enter price" required>
                 </div>
             </div>
         </div>
@@ -226,13 +214,33 @@ Add New Order
                         <h5 class="mb-0">Item ${itemCount}</h5>
                         <button type="button" class="btn btn-danger btn-sm delete-item-btn me-3">Delete Item</button>
                     </div>
-                    <div class="mb-3">
-                        <label for="brick_type_${itemCount}" class="form-label">Brick Type</label>
-                        <input type="text" name="brick_type_${itemCount}" id="brick_type" class="form-control" placeholder="Enter brick type" required style="width: 1210px;">
-                    </div>
+
                     <div class="mb-3">
                         <label for="brand_${itemCount}" class="form-label">Brand</label>
-                        <input type="text" name="brand_${itemCount}" id="brand" class="form-control" placeholder="Enter brand" required style="width: 1210px;">
+
+                        <select name="brand_${itemCount}" id="brand" class="form-control" required>
+                            <option value disabled selected>Select Brand </option>
+                            {% for brand in brands %}
+                                <option value="{{ brand.id }}">{{brand.name }}</option>
+                            {% endfor %}
+                        </select>
+
+                    
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="brick_type_${itemCount}" class="form-label">Brick Type</label>
+                        
+                        <select name="brick_type_${itemCount}" id="brick_type" class="form-control" required>
+                            <option value disabled selected>Select Brick Type</option>
+                            {% for brick in bricks %}
+                                <option value="{{ brick.type_name }}">{{brick.type_name }}</option>
+                            {% endfor %}
+                        </select>
+
+
+
+                    
                     </div>
                     <div class="mb-3">
                         <label for="quantity_${itemCount}" class="form-label">Quantity</label>
@@ -265,5 +273,34 @@ Add New Order
             itemCount = items.length; // Reset the item count to the current number of items
         }
     });
+
+
+    //this code is to show the bricks only for the particular brand selected
+
+    const brandSelect = document.getElementById('brand_1');
+    const brickSelect = document.getElementById('brick_type_1');
+
+    // Add event listener for the brand change
+    brandSelect.addEventListener('change', function() {
+        const selectedBrandId = brandSelect.value;
+
+        // Loop through all brick options
+        for (const option of brickSelect.options) {
+            // If the option's data-brand-id does not match the selected brand, hide it
+            if (option.dataset.brandId !== selectedBrandId && option.value !== "") {
+                option.style.display = "none";
+            } else {
+                option.style.display = "block";
+            }
+        }
+
+        // Reset the brick type to the default option when brand changes
+        brickSelect.value = "";
+    });
+
+
+
+
+
 </script>
 {% endblock %}

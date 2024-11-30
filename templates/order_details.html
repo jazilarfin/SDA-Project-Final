@@ -12,7 +12,7 @@
 {% block maincontent %}  
 
 <nav class="navbar navbar-expand-lg"
-    style="background-color: #007b7b; border-radius: 10px; padding: 5px 15px; height: 45px; width: 80%;">
+    style="background-color: #007b7b; border-radius: 10px; padding: 5px 15px; height: 45px; width: 100%;">
     <div class="container-fluid d-flex align-items-center">
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav d-flex align-items-center">
@@ -41,7 +41,7 @@
 
 
   
-<div class="d-flex flex-column gap-4" style="padding-top: 10px; width: 80%;">
+<div class="d-flex flex-column gap-4" style="padding-top: 10px;">
     <!-- Customer Details Section -->
     <div class="card mb-4" >
         <div class="card-header text-white" style="background-color: #007B7B;">
@@ -56,13 +56,17 @@
             <div class="mb-3">
                 <label class="form-label">Contact</label>
                 <!-- <p class="form-control-plaintext">{{ order.contact }}</p> -->
-                <input type="text" id="customer_name" class="form-control" value="{{ order.contact }}" disabled>
+                <input type="text" id="customer_name" class="form-control" value="{{ order.customer_contact }}" disabled>
             </div>
             <div class="mb-3">
                 <label class="form-label">Address</label>
                 <!-- <p class="form-control-plaintext">{{ order.address }}</p> -->
-                <input type="text" id="customer_name" class="form-control" value="{{ order.address }}" disabled>
+                <input type="text" id="customer_name" class="form-control" value="{{ order.customer_address }}" disabled>
 
+            </div>
+            <div class="mb-3">
+                <label for="total_amount" class="form-label">Amount to Charge</label>
+                <input type="number" id="total_amount" class="form-control" value="{{ order.total_amount }}" disabled>
             </div>
         </div>
     </div>
@@ -76,7 +80,7 @@
             <div class="mb-3">
                 <label class="form-label">Vehicle Registration Number</label>
                 <!-- <p class="form-control-plaintext">{{ order.vehicle_reg_number }}</p> -->
-                <input type="text" id="customer_name" class="form-control" value="{{ order.vehicle_reg_number }}" disabled>
+                <input type="text" id="customer_name" class="form-control" value="{{ order.vehicle.registration_no }}" disabled>
 
             </div>
             <div class="mb-3">
@@ -94,7 +98,7 @@
             <div class="mb-3">
                 <label class="form-label">Salesman Name</label>
                 <!-- <p class="form-control-plaintext">{{ order.salesman_name }}</p> -->
-                <input type="text" id="customer_name" class="form-control" value="{{ order.salesman_name }}" disabled>
+                <input type="text" id="customer_name" class="form-control" value="{{ order.salesman.name }}" disabled>
 
             </div>
         </div>
@@ -112,25 +116,31 @@
                 <div class="mb-3">
                     <label class="form-label">Brick Type</label>
                     <!-- <p class="form-control-plaintext">{{ item.brick_type }}</p> -->
-                <input type="text" id="customer_name" class="form-control" value="{{ item.brick_type }}" disabled>
+                    <input type="text" id="customer_name" class="form-control" value="{{ item.brick_type_name }}" disabled>
 
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Brand</label>
                     <!-- <p class="form-control-plaintext">{{ item.brand }}</p> -->
-                <input type="text" id="customer_name" class="form-control" value="{{ item.brand }}" disabled>
+                    <input type="text" id="brand_name" class="form-control" value="{{ item.brand.name }}" disabled>
 
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Quantity</label>
                     <!-- <p class="form-control-plaintext">{{ item.quantity }}</p> -->
-                <input type="text" id="customer_name" class="form-control" value="{{ item.quantity }}" disabled>
+                    <input type="text" id="quantity" class="form-control" value="{{ item.quantity }}" disabled>
                     
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Price</label>
                     <!-- <p class="form-control-plaintext">{{ item.price }}</p> -->
-                <input type="text" id="customer_name" class="form-control" value="{{ item.price }}" disabled>
+                    <input type="text" id="price" class="form-control" value="{{ item.price }}" disabled>
+
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Total</label>
+                    <!-- <p class="form-control-plaintext">{{ item.price }}</p> -->
+                    <input type="text" id="total_amount" class="form-control" value="{{ item.total_price }}" disabled>
 
                 </div>
                 <hr>
@@ -139,7 +149,7 @@
         </div>
     </div>
 </div>
-<div class="text-center" style=" padding-bottom: 50px; padding-right: 30%;  ">
+<div class="text-center" style=" padding-bottom: 50px;  ">
     <!-- <button type="button" class="btn btn-danger" style="width: 200px;">Edit</button> -->
     <a href="{{ url_for('edit_order', order_id=order.id) }}" class="btn btn-warning">Edit Order</a>
     
