@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}
+<link rel="stylesheet" href="static/salesman.css">
+<title>Salesmen</title>
+{% endblock %}
+
+{% block mainheading %}
+Filtered Salesmen
+{% endblock %}
+
+{% block maincontent %}
+<div>
+   
+
+    
+
+    <!-- Salesmen Table -->
+    <div style="padding: 5.5%;">
+        <table class="styled-table" style="padding-left: 20px; width: 100%; border-collapse: separate; border-spacing: 0 10px;">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Contact Number</th>
+                    <th>CNIC</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for salesman in salesmen %}
+                <tr data-url="{{ url_for('salesman_details', salesman_id=salesman.id) }}" onclick="redirectToDetails(this)" style="cursor: pointer;">
+                    <td>{{ salesman.name }}</td>
+                    <td>{{ salesman.contact_no }}</td>
+                    <td>{{ salesman.cnic }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+{% endblock %}

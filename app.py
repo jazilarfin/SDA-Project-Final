@@ -16,6 +16,10 @@ app.secret_key = os.urandom(24)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 db = SQLAlchemy(app)
 
+app.config['SECRET_KEY'] = 'your_secret_key'
+
+login_manager = LoginManager(app)
+login_manager.login_view = '/'
 
 @app.route('/register_page')
 def register_page():
@@ -23,11 +27,7 @@ def register_page():
 
 @app.route('/register', methods=['POST'])
 def register():
-    users=User.query.all()
-   
-    for user in users:
-        print(user.username)
-        print(user.password)
+    
     username_entered = request.form.get('username') 
     password_entered = request.form.get('password') 
     print('trying to fetch')
@@ -55,6 +55,7 @@ def signin_button():
         user = User.query.filter_by(username=username).first()
 
         if user and user.check_password(password):
+            login_user(user)
             print('Login successful!')
             return redirect(url_for('dashboard'))
         else:
@@ -63,6 +64,7 @@ def signin_button():
 
 
 @app.route('/sidebar_buttons', methods=['POST'])
+@login_required
 def sidebar_buttons():
     button_pressed = request.form['button']
     if button_pressed == 'dashboard':
@@ -76,6 +78,7 @@ def sidebar_buttons():
     elif button_pressed == 'salesman':
         return redirect(url_for('salesman'))
     else:
+        logout_user()
         return redirect(url_for('home'))
     
 
@@ -93,6 +96,11 @@ class User(db.Model,UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+    @property
+    def is_active(self):
+        return True 
+    
+
 
 # Brand and BrickType Models
 class Brand(db.Model):
@@ -239,6 +247,9 @@ class Salesman(db.Model):
     def __repr__(self):
         return f"<Salesman {self.name}: Contact No. {self.contact_no}, CNIC {self.cnic}>"
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 @app.route('/')
 def home():
@@ -248,6 +259,7 @@ def home():
 
 
 @app.route('/dashboard')
+@login_required
 def dashboard():
    
    recent_orders = Order.query.order_by(Order.order_date.desc()).limit(10).all()
@@ -281,6 +293,7 @@ def orders_list_buttons():
     
 
 @app.route('/orders', methods=['GET'])
+@login_required
 def orders():
     page = request.args.get('page', 1, type=int)  # Get the current page number, default is 1
     per_page = 5  # Number of orders per page
@@ -294,12 +307,14 @@ def orders():
 
 
 @app.route('/order/<int:order_id>', methods=['GET'])
+@login_required
 def order_details(order_id):
     order = Order.query.get_or_404(order_id)
     return render_template('order_details.html', order=order)
 
 
 @app.route('/edit_order/<int:order_id>', methods=['GET'])
+@login_required
 def edit_order(order_id):
     order = Order.query.get(order_id)  # Fetch the order by ID
     if not order:
@@ -346,6 +361,7 @@ def edit_order(order_id):
 
 #naya wala edit order route
 @app.route('/edit_order/<int:order_id>', methods=['POST'])
+@login_required
 def edit_order_submit(order_id):
     order = Order.query.get(order_id)
     if not order:
@@ -496,6 +512,7 @@ def edit_order_submit(order_id):
 #-------------
 #naya wala add order route
 @app.route('/add_order', methods=['GET', 'POST'])
+@login_required
 def add_order():
     if request.method == 'POST':
         try:
@@ -619,6 +636,7 @@ def vehicle_list_buttons():
 
 # Route to display the vehicle list page with pagination
 @app.route('/vehicle', methods=['GET'])
+@login_required
 def vehicle():
     page = request.args.get('page', 1, type=int)  # Get the current page number from the URL query parameter
     per_page = 5  # Number of vehicles to display per page
@@ -629,6 +647,7 @@ def vehicle():
 
 # Route to display the details of a specific vehicle
 @app.route('/vehicle/<int:vehicle_id>', methods=['GET'])
+@login_required
 def vehicle_details(vehicle_id):
     vehicle = Vehicle.query.get_or_404(vehicle_id)  # Fetch the vehicle by ID or return 404 if not found
     
@@ -637,6 +656,7 @@ def vehicle_details(vehicle_id):
 
 # Route to handle adding a new vehicle (GET for form, POST for submission)
 @app.route('/add_vehicle', methods=['GET', 'POST'])
+@login_required
 def add_vehicle():
     if request.method == 'POST':  # If the form is submitted (POST request)
         try:
@@ -670,6 +690,7 @@ def add_vehicle():
 
 # Route to handle editing a specific vehicle (GET for form, POST for submission)
 @app.route('/edit_vehicle/<int:vehicle_id>', methods=['GET', 'POST'])
+@login_required
 def edit_vehicle(vehicle_id):
     vehicle = Vehicle.query.get_or_404(vehicle_id)  # Fetch the vehicle by ID or return 404 if not found
 
@@ -702,10 +723,30 @@ def salesman_list_buttons():
     button_value = request.form.get('button')  # Get the value of the button clicked from the form
     if button_value == 'add_salesman':  # If the "add_salesman" button was clicked
         return redirect(url_for('add_salesman'))  # Redirect to the "add_salesman" route
-    return redirect(url_for('salesman'))  # If another button was clicked, redirect to the salesman list page
+    
+    filters = request.form.getlist('filters')  # Get selected filters as list
+    search_text = request.form.get('search_text', '')  # Get search text
+
+    # Start with the base query
+    query = Salesman.query
+
+    # Apply filters based on selected checkboxes
+    if 'name' in filters:
+        query = query.filter(Salesman.name.ilike(f'%{search_text}%'))
+    if 'cnic' in filters:
+        query = query.filter(Salesman.cnic.ilike(f'%{search_text}%'))
+    if 'contact' in filters:
+        query = query.filter(Salesman.contact_no.ilike(f'%{search_text}%'))
+
+    # Execute the query
+    salesmen = query.all()
+
+
+    return render_template('filtered_salesman.html',salesmen=salesmen)
 
 # Route to display the salesman list page with pagination
 @app.route('/salesman', methods=['GET'])
+@login_required
 def salesman():
     page = request.args.get('page', 1, type=int)  # Get the current page number from the URL query parameter
     per_page = 5  # Number of salesmen to display per page
@@ -716,6 +757,7 @@ def salesman():
 
 # Route to display the details of a specific salesman
 @app.route('/salesman/<int:salesman_id>', methods=['GET'])
+@login_required
 def salesman_details(salesman_id):
     salesman = Salesman.query.get_or_404(salesman_id)  # Fetch the salesman by ID or return 404 if not found
     
@@ -724,6 +766,7 @@ def salesman_details(salesman_id):
 
 # Route to handle adding a new salesman (GET for form, POST for submission)
 @app.route('/add_salesman', methods=['GET', 'POST'])
+@login_required
 def add_salesman():
     if request.method == 'POST':  # If the form is submitted (POST request)
         try:
@@ -755,6 +798,7 @@ def add_salesman():
 
 # Route to handle editing a specific salesman (GET for form, POST for submission)
 @app.route('/edit_salesman/<int:salesman_id>', methods=['GET', 'POST'])
+@login_required
 def edit_salesman(salesman_id):
     salesman = Salesman.query.get_or_404(salesman_id)  # Fetch the salesman by ID or return 404 if not found
 
@@ -789,6 +833,7 @@ def brand_list_buttons():
 
 # Route to display the brand list page with pagination
 @app.route('/brand', methods=['GET'])
+@login_required
 def brand():
     page = request.args.get('page', 1, type=int)  # Get the current page number from the URL query parameter
     per_page = 5  # Number of brands to display per page
@@ -799,6 +844,7 @@ def brand():
 
 # Route to display the details of a specific brand
 @app.route('/brand/<int:brand_id>', methods=['GET'])
+@login_required
 def brand_details(brand_id):
     brand = Brand.query.get_or_404(brand_id)  # Fetch the brand by ID or return 404 if not found
     
@@ -809,6 +855,7 @@ def brand_details(brand_id):
 
 # Route to handle adding a new brand (GET for form, POST for submission)
 @app.route('/add_brand', methods=['GET', 'POST'])
+@login_required
 def add_brand():
     if request.method == 'POST':  # If the form is submitted (POST request)
         try:
@@ -865,6 +912,7 @@ def add_brand():
 
 
 @app.route('/edit_brand/<int:brand_id>', methods=['GET', 'POST'])
+@login_required
 def edit_brand(brand_id):
     # Fetch the brand details by ID
     brand = Brand.query.get(brand_id)

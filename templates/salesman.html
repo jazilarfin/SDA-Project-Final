@@ -13,46 +13,66 @@ Salesmen Directory
 <div>
     <table style="padding-left: 5.5%;">
         <form action="{{ url_for('salesman_list_buttons') }}" method="post">
-            <!-- <td style="width:40%; padding-left: 85px;">
-                <input type="text" placeholder="Search Salesman"
-                    style="width: 100%;">
-            </td> -->
+            <!-- Search Input -->
             <td style="width:40%; padding-left: 85px;">
                 <div style="position: relative; width: 100%;">
-                    <!-- Add the magnifying glass icon -->
-                    <img src="/static/icons/search-icon.png"
-                        alt="Search Icon"
-                        style="position: absolute; left: 7px; top: 60%; transform: translateY(-50%); width: 30px; height: 30px;">
-
-                    <!-- Search input -->
-                    <input type="text"
-                        placeholder="Search Salesman"
-                        style="width: 100%; padding-left: 40px;">
+                    <img src="/static/icons/search-icon.png" 
+                         alt="Search Icon" 
+                         style="position: absolute; left: 7px; top: 60%; transform: translateY(-50%); width: 30px; height: 30px;">
+                    <input type="text" 
+                           placeholder="Search Salesman" 
+                           style="width: 100%; padding-left: 40px;">
                 </div>
             </td>
+            <!-- Filter Button -->
             <td style="width:10%; padding-left: 30px; padding-top:15px">
-                <button class="styled-button" name="button"
-                    value="filter_salesman">
-                    <img src="/static/icons/filter-icon.png" alt="Icon"
-                        class="button-icon">
+                <button class="styled-button" type="button" id="filterButton" value="filter">
+                    <img src="/static/icons/filter-icon.png" alt="Icon" class="button-icon">
                     Filter
                 </button>
             </td>
-            <td style="padding-left: 290px; padding-top:15px">
-                <button class="styled-button" name="button"
-                    value="add_salesman">
-                    <img src="/static/icons/add-icon.png" alt="Icon"
-                        class="button-icon">
+            <!-- Add Salesman Button -->
+            <td style="padding-left: 380px; padding-top:15px">
+                <button class="styled-button" name="button" value="add_salesman">
+                    <img src="/static/icons/add-icon.png" alt="Icon" class="button-icon">
                     <div style="color:#007B7B">Add Salesman</div>
                 </button>
             </td>
         </form>
     </table>
 
+    <div id="filterModal" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;">
+        <div style="background-color: white; padding: 20px; border-radius: 8px; width: 400px;">
+            <h3>Apply Filter</h3>
+            <form action="{{ url_for('salesman_list_buttons') }}" method="post">
+                <!-- Filter Selection (Checkboxes) -->
+                <div>
+                    <input type="radio" id="filter_name" name="filters" value="name"> Name
+                </div>
+                <div>
+                    <input type="radio" id="filter_cnic" name="filters" value="cnic"> CNIC
+                </div>
+                <div>
+                    <input type="radio" id="filter_contact" name="filters" value="contact"> Contact
+                </div>
+
+                <!-- Text Input for Search -->
+                <div style="margin-top: 10px;">
+                    <label for="search_text">Search Text:</label>
+                    <input type="text" id="search_text" name="search_text" placeholder="Enter text to search">
+                </div>
+
+                <div style="margin-top: 15px; text-align: right;">
+                    <button type="button" onclick="closeFilterModal()">Close</button>
+                    <button type="submit">Apply Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Salesmen Table -->
     <div style="padding: 5.5%;">
-        <table class="styled-table"
-            style="padding-left: 20px; width: 100%; border-collapse: separate; border-spacing: 0 10px;">
+        <table class="styled-table" style="padding-left: 20px; width: 100%; border-collapse: separate; border-spacing: 0 10px;">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -62,9 +82,7 @@ Salesmen Directory
             </thead>
             <tbody>
                 {% for salesman in salesmen %}
-                <tr
-                    data-url="{{ url_for('salesman_details', salesman_id=salesman.id) }}"
-                    onclick="redirectToDetails(this)" style="cursor: pointer;">
+                <tr data-url="{{ url_for('salesman_details', salesman_id=salesman.id) }}" onclick="redirectToDetails(this)" style="cursor: pointer;">
                     <td>{{ salesman.name }}</td>
                     <td>{{ salesman.contact_no }}</td>
                     <td>{{ salesman.cnic }}</td>
@@ -77,12 +95,9 @@ Salesmen Directory
     <!-- Pagination -->
     <div class="pagination">
         {% if pagination.has_prev %}
-        <a
-            href="{{ url_for('salesman', page=pagination.prev_num) }}">Previous</a>
+        <a href="{{ url_for('salesman', page=pagination.prev_num) }}">Previous</a>
         {% endif %}
-
         <span>Page {{ pagination.page }} of {{ pagination.pages }}</span>
-
         {% if pagination.has_next %}
         <a href="{{ url_for('salesman', page=pagination.next_num) }}">Next</a>
         {% endif %}
@@ -90,10 +105,22 @@ Salesmen Directory
 </div>
 
 <script>
+    // Function to redirect to details page
     function redirectToDetails(row) {
         const url = row.getAttribute('data-url');
         window.location.href = url;
     }
+
+    // Function to open the filter modal
+    document.getElementById('filterButton').addEventListener('click', function() {
+        document.getElementById('filterModal').style.display = 'flex';
+    });
+
+    // Function to close the filter modal
+    function closeFilterModal() {
+        document.getElementById('filterModal').style.display = 'none';
+    }
 </script>
+    
 
 {% endblock %}
