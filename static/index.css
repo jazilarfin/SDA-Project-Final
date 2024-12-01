@@ -100,7 +100,7 @@ p {
   background-color: #f2f1f1; /* Background color of input boxes */
 }
 
-button {
+.btn {
   width: 50%;
   margin-left: 100px;
   padding: 8px 15px;
@@ -113,6 +113,6 @@ button {
   transition: background-color 0.3s;
 }
 
-button:hover {
+.btn:hover {
   background-color: #026c6e;
 }
