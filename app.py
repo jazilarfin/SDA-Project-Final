@@ -286,8 +286,8 @@ def dashboard():
 @app.route('/order_list_buttons', methods=['POST'])
 def orders_list_buttons():
     button_value = request.form.get('button')  # Get the value of the button clicked from the form
-    if button_value == 'add_brand':  # If the "add_brand" button was clicked
-        return redirect(url_for('add_brand'))  # Redirect to the "add_brand" route
+    if button_value == 'add_order':  # If the "add_brand" button was clicked
+        return redirect(url_for('add_order'))  # Redirect to the "add_brand" route
     
     filter_type = request.form.get('filters')  # Type of filter selected
     search_text = request.form.get('search_text')  # Text input for filtering

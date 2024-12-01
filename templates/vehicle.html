@@ -11,34 +11,43 @@ Vehicles Directory
 
 {% block maincontent %}
 <div>
-    <table style="padding-left: 5.5%;">
+    <table style="padding-left: 5.5%; width: 100%; table-layout: fixed;">
         <form action="{{ url_for('vehicle_list_buttons') }}" method="post">
             <!-- <td style="width:40%; padding-left: 85px;">
                 <input type="text" placeholder="Search Vehicle"
                     style="width: 100%;">
             </td> -->
-            <td style="width:40%; padding-left: 85px;">
+            <td style="width:30%; padding-left: 85px;">
                 <div style="position: relative; width: 100%;">
                     <!-- Add the magnifying glass icon -->
                     <img src="/static/icons/search-icon.png" 
                          alt="Search Icon" 
                          style="position: absolute; left: 7px; top: 60%; transform: translateY(-50%); width: 30px; height: 30px;">
             
+
+
                     <!-- Search input -->
-                    <input type="text" 
-                           placeholder="Search Vehicle" 
-                           style="width: 100%; padding-left: 40px;">
+                    <input type="text" name="search_text" title="Press Enter to Search"
+                           placeholder="Search  Vehicle Types" 
+                           style="width: 100%; padding-left: 40px;" onkeydown="if(event.key === 'Enter'){ this.form.submit(); }">
+                             
+                           <input type="hidden" name="filters" value="type">
+
                 </div>
             </td>
-            <td style="width:10%;padding-left: 30px;padding-top:15px">
+
+            </form>
+
+            <form action="{{ url_for('vehicle_list_buttons') }}" method="post">
+            <td style="width: 20%; padding-left: 30px; padding-top:15px; text-align: left; font-size: 16px; font-weight: bold;">
                 <button class="styled-button" name="button" id="filterButton"
                     value="filter_vehicle">
                     <img src="/static/icons/filter-icon.png" alt="Icon"
                         class="button-icon">
-                    Filter
+                    Advanced Filter
                 </button>
             </td>
-            <td style="padding-left: 310px; padding-top:15px">
+            <td style="width: 20%; padding-top:15px; text-align: right;">
                 <button class="styled-button" name="button" value="add_vehicle">
                     <img src="/static/icons/add-icon.png" alt="Icon"
                         class="button-icon">
