@@ -1,25 +1,54 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from extension import db  # Import db from extensions.py
 from sqlalchemy.sql import extract
 from sqlalchemy import func
 import os
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
+
+
+# app = Flask(__name__)
+
+# app.secret_key = os.urandom(24)
+
+
+
+# app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
+# db = SQLAlchemy(app)
 
 app = Flask(__name__)
-
-app.secret_key = os.urandom(24)
-
-
-
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
-db = SQLAlchemy(app)
+app.config["SECRET_KEY"] = "your_secret_key"
+db.init_app(app)  # Initialize db with the app
+
+# Import models
+from models.order import Order  # Import your models here
+from models.vehicle import Vehicle
+from models.salesman import Salesman
+from models.brand import Brand
+from models.bricktype import BrickType
+from models.user import User
+from models.Item import Item
+
+# from routes.vehicle_routes import vehicle_bp
+# from routes.salesman_routes import salesman_bp
+# from routes.brand_routes import brand_bp
+# from routes.order_routes import order_bp
+
+# app.register_blueprint(order_bp,url_prefix='/order')
+# app.register_blueprint(vehicle_bp, url_prefix='/vehicles')
+# app.register_blueprint(salesman_bp, url_prefix='/salesmen')
+# app.register_blueprint(brand_bp, url_prefix='/brands')
 
 app.config['SECRET_KEY'] = 'your_secret_key'
 
 login_manager = LoginManager(app)
 login_manager.login_view = '/'
+
+
+with app.app_context():
+    db.create_all()
+
 
 @app.route('/register_page')
 def register_page():
@@ -81,171 +110,6 @@ def sidebar_buttons():
         logout_user()
         return redirect(url_for('home'))
     
-
-class User(db.Model,UserMixin):
-    __tablename__='users'
-
-    id=db.Column(db.Integer,primary_key=True,autoincrement=True)
-    username=db.Column(db.String(20),nullable=False,unique=True)
-    password=db.Column(db.String(30),nullable=False)
-
-    def __repr__(self):
-        return f"Username {self.username}"
-    def set_password(self, password):
-        self.password = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password, password)
-    @property
-    def is_active(self):
-        return True 
-    
-
-
-# Brand and BrickType Models
-class Brand(db.Model):
-    __tablename__ = 'brands'
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(30), nullable=False)
-    location = db.Column(db.String(100), nullable=False)
-    contact_no = db.Column(db.String(12), unique=True, nullable=False)
-    principal_contact = db.Column(db.String(12), nullable=False)
-
-    # Relationship to BrickType
-    brick_types = db.relationship('BrickType', backref='brand', cascade="all, delete-orphan")
-
-    def __repr__(self):
-        return f"<Brand {self.name} - Location: {self.location}>"
-
-
-class BrickType(db.Model):
-    __tablename__ = 'brick_types'
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    type_name = db.Column(db.String(50), nullable=False)
-    brand_id = db.Column(db.Integer, db.ForeignKey('brands.id'), nullable=False)  # Foreign key to Brand
-
-    # Enforce a unique constraint on type_name and brand_id
-    __table_args__ = (
-        db.UniqueConstraint('type_name', 'brand_id', name='unique_brick_type_per_brand'),
-    )
-
-
-    def __repr__(self):
-        return f"<BrickType {self.type_name} for Brand ID {self.brand_id}>"
-
-
-
-# Order and Item Models
-#class Order(db.Model):
- #   __tablename__ = 'orders'
-#
- #   id = db.Column(db.Integer, primary_key=True)
-  #  customer_name = db.Column(db.String(50), nullable=False)
-   # contact = db.Column(db.String(15), nullable=False)  # Customer contact number
-    #address = db.Column(db.String(150), nullable=False)  # Delivery address
-   # totalbill = db.Column(db.Integer, nullable=False)  # Delivery address
-
-    #vehicle_reg_number = db.Column(db.String(20), nullable=True)  # Vehicle registration number
-#    vehicle_rent = db.Column(db.Float, nullable=True)  # Rent cost of the vehicle
- #   labor_cost = db.Column(db.Float, nullable=True)  # Cost of labor
-  #  salesman_name = db.Column(db.String(50), nullable=True)  # Salesperson name
-   # date = db.Column(db.Date, nullable=False, default=datetime.utcnow)  # Order date
-   # items = db.relationship('Item', backref='order', cascade="all, delete-orphan")  # Relationship to Item
-
-    #def __repr__(self):
-     #   return f"<Order {self.id}: {self.customer_name} on {self.date}>"
-#---------------------------------
-
-#naya waal order ka data base
-class Order(db.Model):
-    __tablename__ = 'orders'
-
-    id = db.Column(db.Integer, primary_key=True)  # Order ID
-    customer_name = db.Column(db.String(100), nullable=False)  # Customer's name
-    customer_contact = db.Column(db.String(15), nullable=False)  # Customer's contact number
-    customer_address = db.Column(db.String(200), nullable=False)  # Customer's address
-    vehicle_rent = db.Column(db.Float, nullable=False)  # Vehicle rent
-    labor_cost = db.Column(db.Float, nullable=False)  # Labor cost
-    total_amount = db.Column(db.Float, nullable=False)  # Total amount for the order
-    order_date = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
-
-    # Foreign keys to the related tables
-    salesman_id = db.Column(db.Integer, db.ForeignKey('salesmen.id'), nullable=False)  # Salesman ID
-    vehicle_id = db.Column(db.Integer, db.ForeignKey('vehicles.id'), nullable=False)  # Vehicle ID
-
-    # Relationships
-    salesman = db.relationship('Salesman', backref=db.backref('orders', lazy=True))  # Salesman relationship
-    vehicle = db.relationship('Vehicle', backref=db.backref('orders', lazy=True))  # Vehicle relationship
-    items = db.relationship('Item', backref=db.backref('order', lazy=True), cascade='all, delete-orphan')  # Items relationship
-
-    def __repr__(self):
-        return f"<Order {self.id}: {self.customer_name}, {self.total_amount}, {self.order_date}>"
-
-
-#--------------------------
-#naya wala item table
-class Item(db.Model):
-    __tablename__ = 'items'
-
-    id = db.Column(db.Integer, primary_key=True)  # Item ID
-    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)  # Foreign key to Order table
-    brick_type_name = db.Column(db.String(50), nullable=False)  # Name of the brick type
-    brand_id = db.Column(db.Integer, db.ForeignKey('brands.id'), nullable=False)  # Brand ID
-    quantity = db.Column(db.Integer, nullable=False)  # Quantity of the brick
-    price = db.Column(db.Float, nullable=False)  # Price of the brick
-    total_price = db.Column(db.Float, nullable=False)  # Total price for this item (quantity * price)
-
-    # Relationship to Order
-    #order = db.relationship('Order', backref=db.backref('items', lazy=True))
-
-    # Relationship to Brand
-    brand = db.relationship('Brand', backref=db.backref('items', lazy=True))
-
-    def __repr__(self):
-        return f"<Item {self.id}: {self.quantity} of {self.brick_type_name} for Order {self.order_id}>"
-
-
-
-
-# class Item(db.Model):
-#     __tablename__ = 'items'
-
-#     id = db.Column(db.Integer, primary_key=True)
-#     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)  # Foreign key to Order
-#     brick_type = db.Column(db.String(50), nullable=False)  # Type of bricks
-#     brand = db.Column(db.String(50), nullable=False)  # Brand of the bricks
-#     quantity = db.Column(db.Integer, nullable=False)  # Quantity of bricks
-#     price = db.Column(db.Float, nullable=False)  # Price of bricks
-
-#     def __repr__(self):
-#         return f"<Item {self.id}: {self.brick_type} - {self.brand} ({self.quantity} @ {self.price})>"
-
-# Vehicle Model
-class Vehicle(db.Model):
-    __tablename__ = 'vehicles'
-
-    id = db.Column(db.Integer, primary_key=True)
-    registration_no = db.Column(db.String(20), unique=True, nullable=False)  # Vehicle registration number
-    vehicle_type = db.Column(db.String(50), nullable=False)  # Type of vehicle
-    capacity = db.Column(db.Integer, nullable=False)  # Capacity in kilograms
-    ownership_status = db.Column(db.String(10), nullable=False)  # Ownership status (own/private)
-
-    def __repr__(self):
-        return f"<Vehicle {self.registration_no}: {self.vehicle_type}, {self.capacity}kg, {self.ownership_status}>"
-    
-# Salesman Model
-class Salesman(db.Model):
-    __tablename__ = 'salesmen'
-
-    id = db.Column(db.Integer, primary_key=True)  # Salesman ID (Primary Key)
-    name = db.Column(db.String(100), nullable=False)  # Salesman's name
-    contact_no = db.Column(db.String(15), unique=True, nullable=False)  # Salesman's contact number
-    cnic = db.Column(db.String(15), unique=True, nullable=False)  # Salesman's CNIC (Computerized National Identity Card)
-
-    def __repr__(self):
-        return f"<Salesman {self.name}: Contact No. {self.contact_no}, CNIC {self.cnic}>"
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -1052,7 +916,3 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(debug=True)
-
-
-
-
