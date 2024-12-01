@@ -285,11 +285,50 @@ def dashboard():
 
 @app.route('/order_list_buttons', methods=['POST'])
 def orders_list_buttons():
-    button_pressed = request.form['button']
-    if button_pressed == 'add_order':
-        return redirect(url_for('add_order'))
+    button_value = request.form.get('button')  # Get the value of the button clicked from the form
+    if button_value == 'add_brand':  # If the "add_brand" button was clicked
+        return redirect(url_for('add_brand'))  # Redirect to the "add_brand" route
+    
+    filter_type = request.form.get('filters')  # Type of filter selected
+    search_text = request.form.get('search_text')  # Text input for filtering
+    
+    # Base query for filtering
+    query = db.session.query(Order)
+
+    # Apply filters
+    if filter_type == 'name':
+        query = query.filter(Order.customer_name.ilike(f'%{search_text}%'))
+    elif filter_type == 'date':
+       
+        try:
+            # Convert input text to datetime to ensure it's in the correct format
+            input_date = datetime.strptime(search_text, '%Y-%m-%d').date()
+            query = query.filter(db.func.date(Order.order_date) == input_date)
+        except ValueError:
+            # Return an error message if the date format is incorrect
+            flash("Please enter the date in YYYY-MM-DD format.")
+            return redirect(url_for('orders'))
+    elif filter_type == 'brick_type':
+        query = query.join(Item).filter(Item.brick_type_name.ilike(f'%{search_text}%'))
+    elif filter_type == 'salesman':
+        query = query.join(Salesman).filter(Salesman.cnic.ilike(f'%{search_text}%'))
+    elif filter_type == 'vehicle_id':
+        query = query.join(Vehicle).filter(Vehicle.registration_no.ilike(f'%{search_text}%'))
+    elif filter_type == 'amount':
+        try:
+            amount = float(search_text)
+            query = query.filter(Order.total_amount == amount)
+        except ValueError:
+            # Handle invalid amount format
+            return render_template('orders.html', error="Invalid amount format. Enter a number.")
     else:
-        return redirect(url_for('orders'))
+        return render_template('orders.html', error="Invalid filter selection.")
+
+    # Execute query
+    orders = query.all()
+    
+    return render_template('filtered_order.html',orders=orders)
+    
     
 
 @app.route('/orders', methods=['GET'])
