@@ -14,15 +14,21 @@ Dashboard
   <div class="header">
     <h1></h1>
   </div>
-  <div class="stats">
-    <div class="stat-box">
+  <div class="stats" style="margin-top: -30px;">
+    <!-- <div class="stat-box">
       <p>Net Income</p>
       <h2>${{ "{:,.2f}".format(net_income) }}</h2>
-    </div>
-    <div class="stat-box">
+    </div> -->
+    <!-- <div class="stat-box">
       <p>Expected Income</p>
       <h2>$25,635.00</h2>
-    </div>
+    </div> -->
+    <div class="card custom-card">
+        <div class="card-body" style="width: 500px; height: 90px; ">
+            <p class="text-muted mb-1">Net Income</p>
+            <h5 class="fw-bold">${{ "{:,.2f}".format(net_income) }}</h5>
+        </div>
+    </div>
   </div>
   <div class="container mt-4">
     <h4>Income Trend</h4>
@@ -49,11 +55,11 @@ Dashboard
         }
     });
 </script>
-<div class="recent-orders">
+<div class="recent-orders" >
     <h2>Recent Orders</h2>
     <table>
-        <thead>
-            <tr>
+        <thead >
+            <tr style="background-color: #007B7B; color: white;">
                 <th>Order_ID</th>
                 <th>Customer</th>
                 <th>Delivery Location</th>
